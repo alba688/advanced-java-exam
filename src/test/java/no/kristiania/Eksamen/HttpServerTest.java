@@ -22,5 +22,10 @@ public class HttpServerTest {
         assertEquals("File not found: /unknown", client.getMessageBody());
     }
 
-
+    @Test
+    void shouldReturn200Response() throws IOException {
+        HttpServer server = new HttpServer(10002);
+        HttpClient client = new HttpClient("localhost", 10002, "/hello");
+        assertEquals(200, client.getStatusCode());
+    }
 }
