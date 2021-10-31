@@ -28,4 +28,11 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", 10002, "/hello");
         assertEquals(200, client.getStatusCode());
     }
+
+    @Test
+    void shouldReturnContentType() throws IOException {
+        HttpServer server = new HttpServer(10003);
+        HttpClient client = new HttpClient("localhost", 10003, "/hello");
+        assertEquals("plain/text", client.getResponseHeader("Content-Type"));
+    }
 }

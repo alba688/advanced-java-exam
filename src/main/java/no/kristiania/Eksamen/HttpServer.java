@@ -26,6 +26,16 @@ public class HttpServer {
                     "\r\n" +
                     responseText;
 
+            if (requestTarget.equals("/hello")) {
+                response = "HTTP/1.1 200 File OK\r\n" +
+                        "Content-Length: 0\r\n\r\n";
+            } else {
+                response = "HTTP/1.1 404 File not found\r\n" +
+                        "Content-Length: "+ responseText.getBytes().length +"\r\n" +
+                        "\r\n" +
+                        responseText;
+            }
+
             clientSocket.getOutputStream().write(response.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
