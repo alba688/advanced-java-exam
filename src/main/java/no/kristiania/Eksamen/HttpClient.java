@@ -1,11 +1,13 @@
 package no.kristiania.Eksamen;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
 public class HttpClient {
     private int statusCode;
+    private final String messagebody;
     private final HashMap<String, String> headerFields = new HashMap<>();
 
     public HttpClient(String host, int port, String requestTarget ) throws IOException {
@@ -26,9 +28,19 @@ public class HttpClient {
                 String value = headerLine.substring(colonPos + 1).trim();
                 headerFields.put(key, value);
             }
+
+            this.messagebody = readBytes(socket.getInputStream(),getContentLength());
         }
 
-        private String readLine (Socket socket) throws IOException {
+    private String readBytes(InputStream in, int contentLength) throws IOException {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < contentLength ; i++) {
+            result.append((char)in.read());
+        }
+        return result.toString();
+    }
+
+    private String readLine (Socket socket) throws IOException {
             StringBuilder line = new StringBuilder();
             int c;
             while ((c = socket.getInputStream().read()) != -1 && c != '\r') {
@@ -51,6 +63,6 @@ public class HttpClient {
             }
 
             public String getMessageBody() {
-            return " ";
+            return messagebody;
             }
         }
