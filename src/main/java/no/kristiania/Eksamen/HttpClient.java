@@ -47,6 +47,10 @@ public class HttpClient {
             }
 
             public int getContentLength() {
-                return 0;
+                return Integer.parseInt(getResponseHeader("Content-Length"));
+            }
+
+            public String getMessageBody() {
+            return " ";
             }
         }
