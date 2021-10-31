@@ -8,6 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HttpClientTest {
+    HttpClient client = new HttpClient("httpbin.org", 80, "/html");
+
+    public HttpClientTest() throws IOException {
+    }
 
     @Test
     void shouldReturn200StatusCode() throws IOException {
@@ -15,19 +19,17 @@ public class HttpClientTest {
     }
 
     @Test
-    void shouldReadResponseHeaders() throws IOException {
-        HttpClient client = new HttpClient("httpbin.org", 80, "/html");
+    void shouldReadResponseHeaders() {
+
         assertEquals("text/html; charset=utf-8", client.getResponseHeader("Content-Type"));
     }
 
     @Test
-    void shouldReadContentLength() throws IOException {
-        HttpClient client = new HttpClient ("httpbin.org", 80, "/html");
+    void shouldReadContentLength()  {
         assertEquals(3741, client.getContentLength());
     }
     @Test
-    void shouldReadMessageBody() throws IOException {
-        HttpClient client = new HttpClient("httpbin.org", 80, "/html");
+    void shouldReadMessageBody()  {
         assertTrue(client.getMessageBody().startsWith("<!DOCTYPE html>\n<html>"),
                 "expected <"+client.getMessageBody()+" to be html"
         );
