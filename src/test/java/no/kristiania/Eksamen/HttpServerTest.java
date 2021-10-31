@@ -14,4 +14,13 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", 10000, "/unknown");
         assertEquals(404, client.getStatusCode());
     }
+    @Test
+    void shouldEchoRequestTarget() throws IOException {
+        HttpServer server = new HttpServer(10001);
+        HttpClient client = new HttpClient("localhost", 10001, "/unknown");
+        assertEquals(404, client.getStatusCode());
+        assertEquals("File not found: /unknown", client.getMessageBody());
+    }
+
+
 }
