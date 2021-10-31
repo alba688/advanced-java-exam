@@ -2,9 +2,11 @@ package no.kristiania.Eksamen;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class HttpClient {
-    private final int statusCode;
+    private int statusCode;
+    private final HashMap<String, String> headerFields = new HashMap<>();
 
     public HttpClient(String host, int port, String requestTarget ) throws IOException {
 
@@ -15,6 +17,15 @@ public class HttpClient {
 
             String statusLine = readLine(socket);
             this.statusCode = Integer.parseInt(statusLine.split(" ")[1]);
+
+            String headerLine;
+
+            while (!(headerLine = readLine(socket)).isBlank()) {
+                int colonPos = headerLine.indexOf(':');
+                String key = headerLine.substring(0, colonPos);
+                String value = headerLine.substring(colonPos + 1).trim();
+                headerFields.put(key, value);
+            }
         }
 
         private String readLine (Socket socket) throws IOException {
@@ -32,6 +43,10 @@ public class HttpClient {
             }
 
             public String getResponseHeader (String s){
-                return " ";
+                return headerFields.get(s);
             }
-        };
+
+            public int getContentLength() {
+                return 0;
+            }
+        }
