@@ -3,6 +3,10 @@ package no.kristiania.Eksamen;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,6 +37,22 @@ public class HttpServerTest {
     void shouldReturnContentType() throws IOException {
         HttpServer server = new HttpServer(10003);
         HttpClient client = new HttpClient("localhost", 10003, "/hello");
-        assertEquals("plain/text", client.getResponseHeader("Content-Type"));
+        assertEquals("text/plain", client.getResponseHeader("Content-Type"));
+    }
+
+    @Test
+    void shouldRespondWithFileOnDisk() throws IOException {
+        Path contentRoot = Paths.get("target/test-classes");
+        String fileContent = "Content created at " + LocalTime.now();
+        Files.writeString(contentRoot.resolve("file.txt"), fileContent);
+
+        HttpServer server = new HttpServer(10004);
+        server.setContentRoot(contentRoot);
+
+        HttpClient client = new HttpClient("localhost", 10004, "/file.txt");
+        assertEquals(fileContent, client.getMessageBody());
+        assertEquals("text/plain", client.getResponseHeader("Content-Type"));
+
+
     }
 }

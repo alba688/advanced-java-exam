@@ -3,6 +3,7 @@ package no.kristiania.Eksamen;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
 
 public class HttpServer {
     private ServerSocket serverSocket;
@@ -28,10 +29,13 @@ public class HttpServer {
 
             if (requestTarget.equals("/hello")) {
                 response = "HTTP/1.1 200 File OK\r\n" +
-                        "Content-Length: 0\r\n\r\n";
+                        "Content-Length: 0\r\n" +
+                        "Content-Type: text/plain\r\n" +
+                        "\r\n";
             } else {
                 response = "HTTP/1.1 404 File not found\r\n" +
                         "Content-Length: "+ responseText.getBytes().length +"\r\n" +
+                        "Content-Type: text/plain\r\n" +
                         "\r\n" +
                         responseText;
             }
@@ -40,6 +44,9 @@ public class HttpServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setContentRoot(Path contentRoot) {
     }
 
 }
