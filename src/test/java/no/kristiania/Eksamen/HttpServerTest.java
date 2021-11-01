@@ -69,4 +69,10 @@ public class HttpServerTest {
         assertEquals(fileContent, client.getMessageBody());
         assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }
+
+    @Test
+    void shouldEchoQueryParameters() throws IOException {
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello?firstName=Test&lastName=Tester");
+        assertEquals("Hello Test Tester", client.getMessageBody());
+    }
 }
