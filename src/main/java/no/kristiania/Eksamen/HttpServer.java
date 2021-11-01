@@ -38,10 +38,7 @@ public class HttpServer {
             fileTarget = requestTarget;
 
             if (requestTarget.equals("/hello")) {
-                response = "HTTP/1.1 200 File OK\r\n" +
-                        "Content-Length: 0\r\n" +
-                        "Content-Type: text/plain\r\n" +
-                        "\r\n";
+                response = write200OKResponse(" ", "text/plain");
             } else {
                 if(contentRoot !=  null && Files.exists(contentRoot.resolve(fileTarget.substring(1)))) {
                     responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
@@ -51,10 +48,7 @@ public class HttpServer {
                         contentType = "text/html";
                     }
 
-                    response = "HTTP/1.1 200 OK\r\n"+
-                            "Content-Length: "+responseText.getBytes().length + "\r\n" +
-                            "Content-Type: " +contentType + "\r\n\r\n" +
-                            responseText;
+                    response = write200OKResponse(responseText, contentType);
                     clientSocket.getOutputStream().write(response.getBytes());
                 } else {
                     response = "HTTP/1.1 404 File not found\r\n" +
@@ -67,6 +61,15 @@ public class HttpServer {
 
             clientSocket.getOutputStream().write(response.getBytes());
 
+    }
+
+    private String write200OKResponse(String responseText, String contentType) {
+        String response;
+        response = "HTTP/1.1 200 OK\r\n"+
+                "Content-Length: "+ responseText.getBytes().length + "\r\n" +
+                "Content-Type: " + contentType + "\r\n\r\n" +
+                responseText;
+        return response;
     }
 
     public void setContentRoot(Path contentRoot) {
