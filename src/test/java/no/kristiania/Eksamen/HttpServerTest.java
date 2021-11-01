@@ -12,32 +12,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpServerTest {
 
+    private final HttpServer server = new HttpServer(0);
+
+    public HttpServerTest() throws IOException {
+    }
+
     @Test
     void shouldReturn404UnknownRequestTarget() throws IOException {
-        HttpServer server = new HttpServer(10000);
-        HttpClient client = new HttpClient("localhost", 10000, "/unknown");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/unknown");
         assertEquals(404, client.getStatusCode());
     }
 
     @Test
     void shouldEchoRequestTarget() throws IOException {
-        HttpServer server = new HttpServer(10001);
-        HttpClient client = new HttpClient("localhost", 10001, "/unknown");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/unknown");
         assertEquals(404, client.getStatusCode());
         assertEquals("File not found: /unknown", client.getMessageBody());
     }
 
     @Test
     void shouldReturn200Response() throws IOException {
-        HttpServer server = new HttpServer(10002);
-        HttpClient client = new HttpClient("localhost", 10002, "/hello");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
         assertEquals(200, client.getStatusCode());
     }
 
     @Test
     void shouldReturnContentType() throws IOException {
-        HttpServer server = new HttpServer(10003);
-        HttpClient client = new HttpClient("localhost", 10003, "/hello");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
         assertEquals("text/plain", client.getResponseHeader("Content-Type"));
     }
 
@@ -47,10 +48,9 @@ public class HttpServerTest {
         String fileContent = "Content created at " + LocalTime.now();
         Files.writeString(contentRoot.resolve("file.txt"), fileContent);
 
-        HttpServer server = new HttpServer(10004);
         server.setContentRoot(contentRoot);
 
-        HttpClient client = new HttpClient("localhost", 10004, "/file.txt");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/file.txt");
         assertEquals(fileContent, client.getMessageBody());
         assertEquals("text/plain", client.getResponseHeader("Content-Type"));
     }
@@ -63,10 +63,9 @@ public class HttpServerTest {
 
         Files.writeString(contentRoot.resolve("file.html"), fileContent);
 
-        HttpServer server = new HttpServer(10005);
         server.setContentRoot(contentRoot);
 
-        HttpClient client = new HttpClient("localhost", 10005, "/file.html");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/file.html");
         assertEquals(fileContent, client.getMessageBody());
         assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }

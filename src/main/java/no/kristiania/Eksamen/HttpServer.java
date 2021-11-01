@@ -12,24 +12,30 @@ public class HttpServer {
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
-        new Thread(this::handleClient).start();
+        new Thread(this::handleClients).start();
     }
 
-    private void handleClient() {
+    private void handleClients() {
         try {
+            while (true) {
+                handleClient();
+            }
+        } catch (IOException e) {
+            System.out.println("No Connection for socket");
+            e.printStackTrace();
+        }
+    }
+
+    private void handleClient() throws IOException {
             Socket clientSocket = serverSocket.accept();
 
             String [] requestLine = HttpReader.readLine(clientSocket).split(" ");
             String requestTarget = requestLine[1];
 
+            String response;
             String responseText = "File not found: " + requestTarget;
             String fileTarget;
             fileTarget = requestTarget;
-
-            String response = "HTTP/1.1 404 File not found\r\n" +
-                    "Content-Length: "+ responseText.getBytes().length +"\r\n" +
-                    "\r\n" +
-                    responseText;
 
             if (requestTarget.equals("/hello")) {
                 response = "HTTP/1.1 200 File OK\r\n" +
@@ -39,8 +45,16 @@ public class HttpServer {
             } else {
                 if(contentRoot !=  null && Files.exists(contentRoot.resolve(fileTarget.substring(1)))) {
                     responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
+
+                    String contentType = "text/plain";
+                    if (requestTarget.endsWith(".html")) {
+                        contentType = "text/html";
+                    }
+
                     response = "HTTP/1.1 200 OK\r\n"+
-                            "Content-Length: "+responseText.getBytes().length + "\r\n" + "Content-Type: text/plain" + "\r\n\r\n" + responseText;
+                            "Content-Length: "+responseText.getBytes().length + "\r\n" +
+                            "Content-Type: " +contentType + "\r\n\r\n" +
+                            responseText;
                     clientSocket.getOutputStream().write(response.getBytes());
                 } else {
                     response = "HTTP/1.1 404 File not found\r\n" +
@@ -52,13 +66,14 @@ public class HttpServer {
             }
 
             clientSocket.getOutputStream().write(response.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public void setContentRoot(Path contentRoot) {
         this.contentRoot = contentRoot;
     }
 
+    public int getPort() {
+        return serverSocket.getLocalPort();
+    }
 }
