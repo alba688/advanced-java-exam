@@ -18,6 +18,7 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", 10000, "/unknown");
         assertEquals(404, client.getStatusCode());
     }
+
     @Test
     void shouldEchoRequestTarget() throws IOException {
         HttpServer server = new HttpServer(10001);
@@ -52,7 +53,21 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", 10004, "/file.txt");
         assertEquals(fileContent, client.getMessageBody());
         assertEquals("text/plain", client.getResponseHeader("Content-Type"));
+    }
 
+    @Test
+    void shouldReturnContentTypeBasedOnFileEnding() throws IOException {
+        Path contentRoot = Paths.get("target/test-classes");
 
+        String fileContent = "<!DOCTYPE html><html><h1>Hello</h1></html>";
+
+        Files.writeString(contentRoot.resolve("file.html"), fileContent);
+
+        HttpServer server = new HttpServer(10005);
+        server.setContentRoot(contentRoot);
+
+        HttpClient client = new HttpClient("localhost", 10005, "/file.html");
+        assertEquals(fileContent, client.getMessageBody());
+        assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }
 }
