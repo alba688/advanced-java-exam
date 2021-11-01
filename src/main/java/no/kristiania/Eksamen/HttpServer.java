@@ -38,43 +38,38 @@ public class HttpServer {
             fileTarget = requestTarget;
 
             if (requestTarget.equals("/hello")) {
-                writeOkResponseCode(clientSocket, responseText, "text/plain");
+                response = write200OKResponse(" ", "text/plain");
             } else {
                 if(contentRoot !=  null && Files.exists(contentRoot.resolve(fileTarget.substring(1)))) {
                     responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
 
-                    String contentType;
+                    String contentType = "text/plain";
                     if (requestTarget.endsWith(".html")) {
                         contentType = "text/html";
-                    } else if (requestTarget.endsWith(".css")) {
-                        contentType = "text/css";
-                    } else {
-                        contentType = "text/plain";
                     }
 
-                    writeOkResponseCode(clientSocket, responseText, contentType);
-                    return;
+                    response = write200OKResponse(responseText, contentType);
+                    clientSocket.getOutputStream().write(response.getBytes());
                 } else {
-                    responseText = "File not found: "+requestTarget;
                     response = "HTTP/1.1 404 File not found\r\n" +
                             "Content-Length: " + responseText.getBytes().length + "\r\n" +
                             "Content-Type: text/plain\r\n" +
                             "\r\n" +
                             responseText;
-                    clientSocket.getOutputStream().write(response.getBytes());
-
                 }
             }
+
+            clientSocket.getOutputStream().write(response.getBytes());
+
     }
 
-    private void writeOkResponseCode(Socket clientSocket, String responseText, String contentType) throws IOException {
-        String response = "HTTP/1.1 200 OK\r\n"+
+    private String write200OKResponse(String responseText, String contentType) {
+        String response;
+        response = "HTTP/1.1 200 OK\r\n"+
                 "Content-Length: "+ responseText.getBytes().length + "\r\n" +
-                "Content-Type: " + contentType + "\r\n" +
-                "Connection: close \r\n" +
-                "\r\n" +
+                "Content-Type: " + contentType + "\r\n\r\n" +
                 responseText;
-        clientSocket.getOutputStream().write(response.getBytes());
+        return response;
     }
 
     public void setContentRoot(Path contentRoot) {
