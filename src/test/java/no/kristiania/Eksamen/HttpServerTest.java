@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -75,5 +76,12 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", server.getPort(), "/hello?firstName=Test&lastName=Tester");
         assertEquals("Hello Test Tester", client.getMessageBody());
 
+    }
+    @Test
+    void shouldShowQuestionOptions() throws IOException {
+        server.setQuestionOptions(List.of("Yes", "No"));
+
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questionOptions");
+        assertEquals("<option value=1>Yes</option><option value=2>No</option>", client.getMessageBody());
     }
 }
