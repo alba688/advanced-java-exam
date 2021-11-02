@@ -3,6 +3,8 @@ package no.kristiania.Eksamen;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +17,7 @@ public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
     private List<String> options = new ArrayList<>();
-    private List<Question> question = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -36,7 +38,9 @@ public class HttpServer {
     private void handleClient() throws IOException {
             Socket clientSocket = serverSocket.accept();
 
-            String [] requestLine = HttpReader.readLine(clientSocket).split(" ");
+            HttpReader httpReader = new HttpReader(clientSocket);
+
+            String[] requestLine = httpReader.statusLine.split(" ");
             String requestTarget = requestLine[1];
 
             String response;
@@ -90,6 +94,16 @@ public class HttpServer {
                     }
                     write200OKResponse(responseText, "text/html", clientSocket);
 
+                } else if (fileTarget.equals("/api/newQuestion")) {
+                    Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+                    Question question = new Question();
+                    question.setQuestionTitle(queryMap.get("title"));
+                    question.setQuestionText(queryMap.get("text"));
+                    questions.add(question);
+                    write200OKResponse("Hurra","text/plain",clientSocket);
+
+
+
                 } else {
                     response = "HTTP/1.1 404 File not found\r\n" +
                             "Content-Length: " + responseText.getBytes().length + "\r\n" +
@@ -109,7 +123,7 @@ public class HttpServer {
         for (String queryParameter : query.split("&")) {
             int equalPos = queryParameter.indexOf("=");
             String parameterName  =queryParameter.substring(0, equalPos);
-            String parameterValue = queryParameter.substring(equalPos+1);
+            String parameterValue = URLDecoder.decode(queryParameter.substring(equalPos+1), StandardCharsets.UTF_8);
             queryMap.put(parameterName,parameterValue);
         }
         return queryMap;
@@ -120,7 +134,8 @@ public class HttpServer {
         String response;
         response = "HTTP/1.1 200 OK\r\n"+
                 "Content-Length: "+ responseText.getBytes().length + "\r\n" +
-                "Content-Type: " + contentType + "\r\n\r\n" +
+                "Content-Type: " + contentType + "\r\n" +
+                "Connection: close"+ "\r\n\r\n" +
                 responseText;
         clientSocket.getOutputStream().write(response.getBytes());
 
@@ -139,7 +154,7 @@ public class HttpServer {
     }
 
     public List<Question> getQuestion() {
-        return question;
+        return questions;
     }
 
     public static void main(String[] args) throws IOException {

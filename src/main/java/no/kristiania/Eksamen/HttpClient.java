@@ -2,33 +2,26 @@ package no.kristiania.Eksamen;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
+
 
 public class HttpClient {
+    private HttpReader httpReader;
     private int statusCode;
-    private final String messagebody;
-    private final HashMap<String, String> headerFields = new HashMap<>();
+
 
     public HttpClient(String host, int port, String requestTarget ) throws IOException {
 
             Socket socket = new Socket(host, port);
             String request = "GET " + requestTarget + " HTTP/1.1\r\n" +
-                    "Host: " + host + "\r\n\r\n";
+                    "Host: " + host + "\r\n" +
+                    "Connection: close\r\n" +
+                    "\r\n";
             socket.getOutputStream().write(request.getBytes());
 
-            String statusLine = HttpReader.readLine(socket);
-            this.statusCode = Integer.parseInt(statusLine.split(" ")[1]);
+            httpReader = new HttpReader(socket);
 
-            String headerLine;
-
-            while (!(headerLine = HttpReader.readLine(socket)).isBlank()) {
-                int colonPos = headerLine.indexOf(':');
-                String key = headerLine.substring(0, colonPos);
-                String value = headerLine.substring(colonPos + 1).trim();
-                headerFields.put(key, value);
-            }
-
-            this.messagebody = HttpReader.readBytes(socket.getInputStream(),getContentLength());
+            String[] statusLine = httpReader.statusLine.split(" ");
+            this.statusCode = Integer.parseInt(statusLine[1]);
         }
 
     public int getStatusCode () {
@@ -36,7 +29,7 @@ public class HttpClient {
             }
 
             public String getResponseHeader (String s){
-                return headerFields.get(s);
+                return httpReader.headerFields.get(s);
             }
 
             public int getContentLength() {
@@ -44,6 +37,6 @@ public class HttpClient {
             }
 
             public String getMessageBody() {
-            return messagebody;
+            return httpReader.messageBody;
             }
         }

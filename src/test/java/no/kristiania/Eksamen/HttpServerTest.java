@@ -94,13 +94,23 @@ public class HttpServerTest {
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
-                "/api/questions",
-                "question=What%20is%20your%20name"
+                "/api/newQuestion",
+                "title=What+is+your+name%3F&"
         );
         assertEquals(200, postClient.getStatusCode());
         Question question = server.getQuestion().get(0);
-        assertEquals("What is your name?", question.getQuestion());
+        assertEquals("What is your name?", question.getQuestionTitle());
 
     }
 
+    @Test
+    void shouldShowQuestionWithText() throws IOException {
+        Question question = new Question();
+        question.setQuestionTitle("Do you like pizza?");
+        question.setQuestionText("Choose yes or no");
+        server.getQuestion().add(question);
+        HttpClient client = new HttpClient("localhost", server.getPort(), "api/questions");
+        assertEquals("<p>Do you like pizza?</p>", client.getMessageBody());
+
+    }
 }
