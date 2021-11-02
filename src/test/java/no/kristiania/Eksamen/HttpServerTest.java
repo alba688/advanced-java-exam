@@ -81,7 +81,26 @@ public class HttpServerTest {
     void shouldShowQuestionOptions() throws IOException {
         server.setQuestionOptions(List.of("Yes", "No"));
 
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questionOptions");
-        assertEquals("<option value=1>Yes</option><option value=2>No</option>", client.getMessageBody());
+        HttpClient client = new HttpClient(
+                "localhost",
+                server.getPort(),
+                "/api/questionOptions");
+        assertEquals("<option value=1>Yes</option><option value=2>No</option>",
+                client.getMessageBody());
     }
+
+    @Test
+    void shouldCreateNewQuestion() throws IOException {
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/questions",
+                "question=What%20is%20your%20name"
+        );
+        assertEquals(200, postClient.getStatusCode());
+        Question question = server.getQuestion().get(0);
+        assertEquals("What is your name?", question.getQuestion());
+
+    }
+
 }

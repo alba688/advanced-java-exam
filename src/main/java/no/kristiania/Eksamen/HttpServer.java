@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,8 @@ import java.util.Map;
 public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
+    private List<String> options = new ArrayList<>();
+    private List<Question> question = new ArrayList<>();
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -76,8 +80,15 @@ public class HttpServer {
                     } else {
                         contentType = "text/plain";
                     }
-
                     write200OKResponse(responseText, contentType, clientSocket);
+
+                } else if (fileTarget.equals("/api/questionOptions")) {
+                    responseText = "";
+                    int value = 1;
+                    for (String option : options) {
+                        responseText += "<option value="+(value++)+">"+ option +"</option>";
+                    }
+                    write200OKResponse(responseText, "text/html", clientSocket);
 
                 } else {
                     response = "HTTP/1.1 404 File not found\r\n" +
@@ -124,5 +135,16 @@ public class HttpServer {
     }
 
     public void setQuestionOptions(List<String> options) {
+        this.options = options;
+    }
+
+    public List<Question> getQuestion() {
+        return question;
+    }
+
+    public static void main(String[] args) throws IOException {
+        HttpServer server = new HttpServer(10001);
+        server.setQuestionOptions(List.of("Yes", "No"));
+        server.setContentRoot(Paths.get("src/main/resources"));
     }
 }
