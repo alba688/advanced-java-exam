@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpReader {
-    public String statusLine;
+    public static String statusLine;
     public String messageBody;
     public Map<String, String> headerFields = new HashMap<>();
 
@@ -15,19 +15,23 @@ public class HttpReader {
         statusLine = readLine(socket);
         readHeader(socket);
         if (headerFields.containsKey("Content-Length")) {
-            messageBody = HttpReader.readBytes(socket.getInputStream(), getContentLength());
+            messageBody = readBytes(socket.getInputStream(), getContentLength());
         }
     }
 
     static String readLine(Socket socket) throws IOException {
-            StringBuilder line = new StringBuilder();
-            int c;
-            while ((c = socket.getInputStream().read()) != -1 && c != '\r') {
-                line.append((char) c);
-            }
-            socket.getInputStream().read();
-            return line.toString();
+        StringBuilder line = new StringBuilder();
+        int c;
+        while ((c = socket.getInputStream().read()) != '\r' ) {
+            line.append((char) c);
         }
+        int expectedNewLine = socket.getInputStream().read();
+        assert expectedNewLine == '\n';
+        return line.toString();
+    }
+
+    /* in previous ABK we passed Socket instead of InputStream */
+    /* then (char)socket.getInputStream().read() -- believe this does the same?? */
 
     static String readBytes(InputStream in, int contentLength) throws IOException {
         StringBuilder result = new StringBuilder();
@@ -36,10 +40,11 @@ public class HttpReader {
         }
         return result.toString();
     }
+
     private void readHeader(Socket socket) throws IOException {
         String headerLine;
 
-        while (!(headerLine = HttpReader.readLine(socket)).isBlank()) {
+        while (!(headerLine = readLine(socket)).isBlank()) {
             int colonPos = headerLine.indexOf(':');
             String key = headerLine.substring(0, colonPos);
             String value = headerLine.substring(colonPos + 1).trim();

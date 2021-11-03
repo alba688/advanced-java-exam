@@ -10,33 +10,32 @@ public class HttpClient {
 
 
     public HttpClient(String host, int port, String requestTarget ) throws IOException {
-
-            Socket socket = new Socket(host, port);
-            String request = "GET " + requestTarget + " HTTP/1.1\r\n" +
+        Socket socket = new Socket(host, port);
+        String request = "GET " + requestTarget + " HTTP/1.1\r\n" +
                     "Host: " + host + "\r\n" +
                     "Connection: close\r\n" +
                     "\r\n";
-            socket.getOutputStream().write(request.getBytes());
+        socket.getOutputStream().write(request.getBytes());
 
-            httpReader = new HttpReader(socket);
+        httpReader = new HttpReader(socket);
 
-            String[] statusLine = httpReader.statusLine.split(" ");
-            this.statusCode = Integer.parseInt(statusLine[1]);
-        }
+        String[] statusLine = httpReader.statusLine.split(" ");
+        this.statusCode = Integer.parseInt(statusLine[1]);
+    }
 
     public int getStatusCode () {
-                return statusCode;
-            }
+        return statusCode;
+    }
 
-            public String getResponseHeader (String s){
-                return httpReader.headerFields.get(s);
-            }
+    public String getResponseHeader (String s){
+        return httpReader.headerFields.get(s);
+    }
 
-            public int getContentLength() {
-                return Integer.parseInt(getResponseHeader("Content-Length"));
-            }
+    public int getContentLength() {
+        return Integer.parseInt(getResponseHeader("Content-Length"));
+    }
 
-            public String getMessageBody() {
-            return httpReader.messageBody;
-            }
-        }
+    public String getMessageBody() {
+        return httpReader.messageBody;
+    }
+}

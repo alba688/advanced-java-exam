@@ -109,8 +109,8 @@ public class HttpServerTest {
         question.setQuestionTitle("Do you like pizza?");
         question.setQuestionText("Choose yes or no");
         server.getQuestion().add(question);
-        HttpClient client = new HttpClient("localhost", server.getPort(), "api/questions");
-        assertEquals("<p>Do you like pizza?</p>", client.getMessageBody());
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
+        assertEquals("<p>Do you like pizza? Choose yes or no</p>", client.getMessageBody());
 
     }
 }

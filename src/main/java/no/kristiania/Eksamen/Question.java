@@ -4,13 +4,13 @@ public class Question {
     private String questionText;
     private String questionTitle;
 
-    public Question(String question) {
-
-    }
-
-    public Question() {
-
-    }
+/*    public Question(String question) {
+//
+//    }
+//
+//    public Question() {
+//      }
+*/
 
     public String getQuestionTitle() {
         return questionTitle;
