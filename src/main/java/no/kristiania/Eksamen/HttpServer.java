@@ -43,6 +43,10 @@ public class HttpServer {
             String[] requestLine = httpReader.statusLine.split(" ");
             String requestTarget = requestLine[1];
 
+            if(requestTarget.equals("/")) {
+                requestTarget = "/index.html";
+            }
+
             String response;
             String responseText = "File not found: " + requestTarget;
 
@@ -56,6 +60,7 @@ public class HttpServer {
             } else {
                 fileTarget = requestTarget;
             }
+
 
 
             if (fileTarget.equals("/hello")) {
@@ -100,7 +105,7 @@ public class HttpServer {
                     question.setQuestionTitle(queryMap.get("title"));
                     question.setQuestionText(queryMap.get("text"));
                     questions.add(question);
-                    write200OKResponse("Hurra","text/plain",clientSocket);
+                    write200OKResponse("Question added","text/plain",clientSocket);
 
 
 
