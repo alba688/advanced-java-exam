@@ -16,7 +16,7 @@ import java.util.Map;
 public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
-    private List<String> options = new ArrayList<>();
+    private List<String> questionnaires = new ArrayList<>();
     private List<Question> questions = new ArrayList<>();
 
     public HttpServer(int serverPort) throws IOException {
@@ -98,15 +98,15 @@ public class HttpServer {
                                     "<input type=\"radio\" name=\"question_answer\"></input>" +
                                     "<input type=\"radio\" name=\"question_answer\"></input>" +
                     "<input type=\"radio\"name=\"question_answer\"></input>" + "<label>" + question.getHighLabel() + "</label>" +
-                                    "<input type=\"submit\">Answer</input></form>";
+                                    "</form>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
-            } else if (fileTarget.equals("/api/questionOptions")) {
+            } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 responseText = "";
                 int value = 1;
-                for (String option : options) {
-                    responseText += "<option value="+(value++)+">"+ option +"</option>";
+                for (String questionnaire : questionnaires) {
+                    responseText += "<option value="+(value++)+">"+ questionnaire +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -114,6 +114,10 @@ public class HttpServer {
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Question question = new Question();
                 // should these be questionText and questionTitle ??
+
+                // Havent solved how to retrieve the questionnaire yet
+                //int questionnaireID = Integer.parseInt(queryMap.get("questionnaire_id"));
+                //question.setQuestionnaireId(questionnaireID);
                 question.setQuestionTitle(queryMap.get("title"));
                 question.setQuestionText(queryMap.get("text"));
                 question.setLowLabel(queryMap.get("low_label"));
@@ -163,8 +167,8 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public void setQuestionOptions(List<String> options) {
-        this.options = options;
+    public void setListOfQuestionnaires(List<String> questionnaire) {
+        this.questionnaires = questionnaire;
     }
 
     public List<Question> getQuestion() {
@@ -173,7 +177,7 @@ public class HttpServer {
 
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
-        server.setQuestionOptions(List.of("Yes", "No"));
+        server.setListOfQuestionnaires(List.of("Yes", "No"));
         server.setContentRoot(Paths.get("src/main/resources"));
     }
 }

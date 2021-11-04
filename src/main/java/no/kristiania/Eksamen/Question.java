@@ -5,6 +5,7 @@ public class Question {
     private String questionTitle;
     private String lowLabel;
     private String highLabel;
+    private int questionnaireId;
 
 
 /*    public Question(String question) {
@@ -45,5 +46,13 @@ public class Question {
 
     public void setHighLabel(String highLabel) {
         this.highLabel = highLabel;
+    }
+
+    public int getQuestionnaireId() {
+        return questionnaireId;
+    }
+
+    public void setQuestionnaireId(int questionnaireId) {
+        this.questionnaireId = questionnaireId;
     }
 }
