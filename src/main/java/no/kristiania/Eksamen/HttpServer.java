@@ -92,7 +92,13 @@ public class HttpServer {
                 for (Question question : questions) {
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
-                            " " + question.getQuestionText() + "</p>";
+                            " " + question.getQuestionText() + "</p>" +
+                    "<form><label>" + question.getLowLabel() + "<input type=\"radio\" name=\"question_answer\"></input></label>" +
+                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
+                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
+                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
+                    "<input type=\"radio\"name=\"question_answer\"></input>" + "<label>" + question.getHighLabel() + "</label>" +
+                                    "<input type=\"submit\">Answer</input></form>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -110,6 +116,8 @@ public class HttpServer {
                 // should these be questionText and questionTitle ??
                 question.setQuestionTitle(queryMap.get("title"));
                 question.setQuestionText(queryMap.get("text"));
+                question.setLowLabel(queryMap.get("low_label"));
+                question.setHighLabel(queryMap.get("high_label"));
                 questions.add(question);
                 write200OKResponse("Question added","text/plain",clientSocket);
 
