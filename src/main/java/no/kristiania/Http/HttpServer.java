@@ -95,7 +95,7 @@ public class HttpServer {
 
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
-                            " " + question.getQuestionText() + "</p>" +
+                            "</p>" +
                             "<form method=\"\" action=\"\"><label>" + question.getLowLabel() +"</label>";
 
                             for (int i=0; i < question.getNumberOfValues(); i++){
@@ -123,7 +123,6 @@ public class HttpServer {
                 int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
                 question.setQuestionnaireId(questionnaireID);
                 question.setQuestionTitle(queryMap.get("title"));
-                question.setQuestionText(queryMap.get("text"));
                 question.setLowLabel(queryMap.get("low_label"));
                 question.setHighLabel(queryMap.get("high_label"));
                 int numberOfValues = Integer.parseInt(queryMap.get("values"));

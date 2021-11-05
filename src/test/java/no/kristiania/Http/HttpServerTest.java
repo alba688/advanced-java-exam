@@ -130,13 +130,12 @@ public class HttpServerTest {
     void shouldShowQuestionWithText() throws IOException {
         Question question = new Question();
         question.setQuestionTitle("Do you like pizza?");
-        question.setQuestionText("Choose between 1 and 5");
         question.setLowLabel("Not at all");
         question.setHighLabel("Love it");
         question.setNumberOfValues(5);
         server.getQuestion().add(question);
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
-        assertEquals("<p>Do you like pizza? Choose between 1 and 5</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question0_answer\"></input><input value=\"1\"type=\"radio\" name=\"question0_answer\"></input><input value=\"2\"type=\"radio\" name=\"question0_answer\"></input><input value=\"3\"type=\"radio\" name=\"question0_answer\"></input><input value=\"4\"type=\"radio\" name=\"question0_answer\"></input><label>Love it</label></form>", client.getMessageBody());
+        assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question0_answer\"></input><input value=\"1\"type=\"radio\" name=\"question0_answer\"></input><input value=\"2\"type=\"radio\" name=\"question0_answer\"></input><input value=\"3\"type=\"radio\" name=\"question0_answer\"></input><input value=\"4\"type=\"radio\" name=\"question0_answer\"></input><label>Love it</label></form>", client.getMessageBody());
 
     }
 
