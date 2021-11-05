@@ -1,4 +1,4 @@
-package no.kristiania.Eksamen;
+package no.kristiania.Http;
 
 import org.junit.jupiter.api.Test;
 
