@@ -4,20 +4,9 @@ public class Question {
     private int questionnaireId;
     private int questionId;
     private String questionTitle;
-    private String questionText;
     private String lowLabel;
     private String highLabel;
     private int numberOfValues;
-
-
-
-/*    public Question(String question) {
-//
-//    }
-//
-//    public Question() {
-//      }
-*/
 
     public int getQuestionId() {
         return questionId;
@@ -33,14 +22,6 @@ public class Question {
 
     public void setQuestionTitle(String questionTitle) {
         this.questionTitle = questionTitle;
-    }
-
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
     }
 
     public String getLowLabel() {
