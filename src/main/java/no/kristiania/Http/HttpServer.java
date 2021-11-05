@@ -90,22 +90,25 @@ public class HttpServer {
                 write200OKResponse(responseText, contentType, clientSocket);
 
             } else if (fileTarget.equals("/api/questions")) {
-                String responseText = "No questions found";
+                String responseText = "";
                 for (Question question : questions) {
+
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
                             " " + question.getQuestionText() + "</p>" +
-                    "<form><label>" + question.getLowLabel() + "<input type=\"radio\" name=\"question_answer\"></input></label>" +
-                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
-                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
-                                    "<input type=\"radio\" name=\"question_answer\"></input>" +
-                    "<input type=\"radio\"name=\"question_answer\"></input>" + "<label>" + question.getHighLabel() + "</label>" +
+                            "<form method=\"\" action\"\"><label>" + question.getLowLabel() +"</label>";
+
+                            for (int i=0; i < question.getNumberOfValues(); i++){
+                                responseText += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
+                            }
+
+                    responseText +="<label>" + question.getHighLabel() + "</label>" +
                                     "</form>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
-                String responseText = "No questionnaires";
+                String responseText = "";
                 int value = 1;
                 for (Questionnaire questionnaire : questionnaires) {
                     responseText += "<option value=\""+(value++)+"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
@@ -123,10 +126,13 @@ public class HttpServer {
                 question.setQuestionText(queryMap.get("text"));
                 question.setLowLabel(queryMap.get("low_label"));
                 question.setHighLabel(queryMap.get("high_label"));
+                int numberOfValues = Integer.parseInt(queryMap.get("values"));
+                question.setNumberOfValues(numberOfValues);
                 questions.add(question);
-                write200OKResponse("Question added","text/plain",clientSocket);
+                write200OKResponse("Question added", "text/plain", clientSocket);
 
-            } else if (fileTarget.equals("/api/newQuestionnaire")){
+            }
+            else if (fileTarget.equals("/api/newQuestionnaire")){
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Questionnaire questionnaire = new Questionnaire();
                 questionnaire.setQuestionnaireTitle(queryMap.get("title"));
@@ -196,9 +202,10 @@ public class HttpServer {
 
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Test Questionnaire");
 
-
-        // server.setListOfQuestionnaires(List.of("Yes", "No"));
+        server.setListOfQuestionnaires(List.of(questionnaire));
         server.setContentRoot(Paths.get("src/main/resources"));
     }
 

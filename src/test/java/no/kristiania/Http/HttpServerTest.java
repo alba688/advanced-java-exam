@@ -138,4 +138,5 @@ public class HttpServerTest {
         assertEquals("<p>Do you like pizza? Choose between 1 and 5</p><form><label>Not at all<input type=\"radio\" name=\"question_answer\"></input></label><input type=\"radio\" name=\"question_answer\"></input><input type=\"radio\" name=\"question_answer\"></input><input type=\"radio\" name=\"question_answer\"></input><input type=\"radio\"name=\"question_answer\"></input><label>Love it</label></form>", client.getMessageBody());
 
     }
+
 }
