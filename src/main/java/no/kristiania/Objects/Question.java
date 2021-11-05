@@ -8,6 +8,7 @@ public class Question {
     private String highLabel;
     private int numberOfValues;
 
+
     public int getQuestionId() {
         return questionId;
     }
