@@ -96,7 +96,7 @@ public class HttpServer {
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
                             " " + question.getQuestionText() + "</p>" +
-                            "<form method=\"\" action\"\"><label>" + question.getLowLabel() +"</label>";
+                            "<form method=\"\" action=\"\"><label>" + question.getLowLabel() +"</label>";
 
                             for (int i=0; i < question.getNumberOfValues(); i++){
                                 responseText += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
@@ -127,6 +127,7 @@ public class HttpServer {
                 question.setLowLabel(queryMap.get("low_label"));
                 question.setHighLabel(queryMap.get("high_label"));
                 int numberOfValues = Integer.parseInt(queryMap.get("values"));
+
                 question.setNumberOfValues(numberOfValues);
                 questions.add(question);
                 write200OKResponse("Question added", "text/plain", clientSocket);
