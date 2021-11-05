@@ -106,7 +106,7 @@ public class HttpServer {
                 responseText = "";
                 int value = 1;
                 for (String questionnaire : questionnaires) {
-                    responseText += "<option value="+(value++)+">"+ questionnaire +"</option>";
+                    responseText += "<option value=\""+(value++)+"\">"+ questionnaire +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -116,8 +116,8 @@ public class HttpServer {
                 // should these be questionText and questionTitle ??
 
                 // Havent solved how to retrieve the questionnaire yet
-                //int questionnaireID = Integer.parseInt(queryMap.get("questionnaire_id"));
-                //question.setQuestionnaireId(questionnaireID);
+                int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
+                question.setQuestionnaireId(questionnaireID);
                 question.setQuestionTitle(queryMap.get("title"));
                 question.setQuestionText(queryMap.get("text"));
                 question.setLowLabel(queryMap.get("low_label"));

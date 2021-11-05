@@ -85,7 +85,7 @@ public class HttpServerTest {
                 "localhost",
                 server.getPort(),
                 "/api/listQuestionnaires");
-        assertEquals("<option value=1>Matvaner</option><option value=2>Sosiale vaner</option>",
+        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale vaner</option>",
                 client.getMessageBody());
     }
 
@@ -95,12 +95,27 @@ public class HttpServerTest {
                 "localhost",
                 server.getPort(),
                 "/api/newQuestion",
-                "title=What+is+your+name%3F&"
+                "questionnaires=1&title=What+is+your+name%3F&"
         );
         assertEquals(200, postClient.getStatusCode());
         Question question = server.getQuestion().get(0);
+        assertEquals(1 ,question.getQuestionnaireId());
         assertEquals("What is your name?", question.getQuestionTitle());
 
+    }
+
+    @Test
+    void shouldCreateNewQuestionnaire() throws IOException {
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/newQuestionnaire",
+                "title=questionnaireTitle&text=questionnaireText"
+        );
+        assertEquals(200, postClient.getStatusCode());
+        Questionnaire questionnaire = server.getQuestionnaire().get(0);
+        assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
+        assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
     }
 
     @Test
