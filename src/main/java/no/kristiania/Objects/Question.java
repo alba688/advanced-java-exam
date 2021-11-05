@@ -1,11 +1,12 @@
-package no.kristiania.Eksamen;
+package no.kristiania.Objects;
 
 public class Question {
-    private String questionText;
+    private int questionnaireId;
     private String questionTitle;
+    private String questionText;
     private String lowLabel;
     private String highLabel;
-    private int questionnaireId;
+
 
 
 /*    public Question(String question) {

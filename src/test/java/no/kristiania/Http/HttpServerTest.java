@@ -1,5 +1,7 @@
-package no.kristiania.Eksamen;
+package no.kristiania.Http;
 
+import no.kristiania.Objects.Question;
+import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -79,13 +81,19 @@ public class HttpServerTest {
     }
     @Test
     void shouldShowQuestionOptions() throws IOException {
-        server.setListOfQuestionnaires(List.of("Matvaner", "Sosiale vaner"));
+        Questionnaire firstQuestionnaire = new Questionnaire();
+        firstQuestionnaire.setQuestionnaireTitle("Matvaner");
+        Questionnaire secondQuestionnaire = new Questionnaire();
+        secondQuestionnaire.setQuestionnaireTitle("Sosiale Vaner");
+
+
+        server.setListOfQuestionnaires(List.of(firstQuestionnaire, secondQuestionnaire));
 
         HttpClient client = new HttpClient(
                 "localhost",
                 server.getPort(),
                 "/api/listQuestionnaires");
-        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale vaner</option>",
+        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
                 client.getMessageBody());
     }
 

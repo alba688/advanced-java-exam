@@ -1,4 +1,7 @@
-package no.kristiania.Eksamen;
+package no.kristiania.Http;
+
+import no.kristiania.Objects.Question;
+import no.kristiania.Objects.Questionnaire;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,7 +19,7 @@ import java.util.Map;
 public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
-    private List<String> questionnaires = new ArrayList<>();
+    private List<Questionnaire> questionnaires = new ArrayList<>();
     private List<Question> questions = new ArrayList<>();
 
     public HttpServer(int serverPort) throws IOException {
@@ -105,8 +108,8 @@ public class HttpServer {
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 responseText = "";
                 int value = 1;
-                for (String questionnaire : questionnaires) {
-                    responseText += "<option value=\""+(value++)+"\">"+ questionnaire +"</option>";
+                for (Questionnaire questionnaire : questionnaires) {
+                    responseText += "<option value=\""+(value++)+"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -115,7 +118,6 @@ public class HttpServer {
                 Question question = new Question();
                 // should these be questionText and questionTitle ??
 
-                // Havent solved how to retrieve the questionnaire yet
                 int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
                 question.setQuestionnaireId(questionnaireID);
                 question.setQuestionTitle(queryMap.get("title"));
@@ -124,6 +126,14 @@ public class HttpServer {
                 question.setHighLabel(queryMap.get("high_label"));
                 questions.add(question);
                 write200OKResponse("Question added","text/plain",clientSocket);
+
+            } else if (fileTarget.equals("/api/newQuestionnaire")){
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+                Questionnaire questionnaire = new Questionnaire();
+                questionnaire.setQuestionnaireTitle(queryMap.get("title"));
+                questionnaire.setQuestionnaireText(queryMap.get("text"));
+                questionnaires.add(questionnaire);
+                write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
                 response = "HTTP/1.1 404 File not found\r\n" +
@@ -167,7 +177,7 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public void setListOfQuestionnaires(List<String> questionnaire) {
+    public void setListOfQuestionnaires(List<Questionnaire> questionnaire) {
         this.questionnaires = questionnaire;
     }
 
@@ -175,9 +185,23 @@ public class HttpServer {
         return questions;
     }
 
+    public List<Questionnaire> getQuestionnaires() {
+        return questionnaires;
+    }
+
+    public void setQuestionnaires(List<Questionnaire> questionnaires) {
+        this.questionnaires = questionnaires;
+    }
+
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
-        server.setListOfQuestionnaires(List.of("Yes", "No"));
+
+
+        // server.setListOfQuestionnaires(List.of("Yes", "No"));
         server.setContentRoot(Paths.get("src/main/resources"));
+    }
+
+    public List<Questionnaire> getQuestionnaire() {
+        return questionnaires;
     }
 }
