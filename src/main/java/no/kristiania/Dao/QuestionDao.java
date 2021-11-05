@@ -17,10 +17,13 @@ public class QuestionDao {
         try (Connection connection = datasource.getConnection()) {
 
             try (PreparedStatement statement = connection.prepareStatement(
-                    "insert into question (question_title) values (?)",
+                    "insert into question (question_title, low_label, high_label, number_of_values) values (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, question.getQuestionTitle());
+                statement.setString(2, question.getLowLabel());
+                statement.setString(3, question.getHighLabel());
+                statement.setInt(4, question.getNumberOfValues());
 
                 statement.executeUpdate();
 
