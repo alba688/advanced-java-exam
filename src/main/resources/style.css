@@ -1,3 +1,20 @@
 body {
-    background-color: lime;
+    background-color: white;
+    text-align: center;
+    font-family: sans-serif;
+
+
+}
+input {
+    background-color: #eeeeee;
+    padding: 2px;
+}
+
+a {
+    text-decoration: none;
+    color: #c4c4c4;
+    margin-top: 20px;
+}
+a:hover {
+    color: blacK;
 }
