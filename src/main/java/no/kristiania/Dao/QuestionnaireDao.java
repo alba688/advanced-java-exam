@@ -6,15 +6,14 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.*;
 
-public class QuestionnaireDao {
-    private DataSource datasource;
+public class QuestionnaireDao extends AbstractDao<Questionnaire>{
 
     public QuestionnaireDao(DataSource dataSource) {
-        this.datasource = dataSource;
+        super(dataSource);
     }
 
     public void save(Questionnaire questionnaire) throws SQLException {
-        try (Connection connection = datasource.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "insert into questionnaire (questionnaire_title, questionnaire_text) values (?, ?)",
@@ -34,22 +33,11 @@ public class QuestionnaireDao {
     }
 
     public Questionnaire retrieve(int id) throws SQLException {
-        try (Connection connection = datasource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "select * from questionnaire where questionnaire_id = (?)"
-            )) {
-                statement.setInt(1, id);
-
-                try (ResultSet rs = statement.executeQuery()) {
-                    rs.next();
-
-                    return mapFromResultSet(rs);
-                }
-            }
-        }
+        return super.retrieve("select * from questionnaire where questionnaire_id = (?)", id);
     }
 
-    private Questionnaire mapFromResultSet(ResultSet rs) throws SQLException {
+    @Override
+    protected Questionnaire mapFromResultSet(ResultSet rs) throws SQLException {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaire_id(rs.getInt("questionnaire_id"));
         questionnaire.setQuestionnaireTitle(rs.getString("questionnaire_title"));

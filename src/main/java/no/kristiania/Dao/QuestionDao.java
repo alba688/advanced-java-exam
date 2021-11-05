@@ -5,16 +5,14 @@ import no.kristiania.Objects.Question;
 import javax.sql.DataSource;
 import java.sql.*;
 
-public class QuestionDao {
-
-    private final DataSource datasource;
+public class QuestionDao extends AbstractDao<Question> {
 
     public QuestionDao(DataSource dataSource) {
-        this.datasource = dataSource;
+        super(dataSource);
     }
 
     public void save(Question question) throws SQLException {
-        try (Connection connection = datasource.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "insert into question (question_title, low_label, high_label, number_of_values) values (?, ?, ?, ?)",
@@ -37,22 +35,11 @@ public class QuestionDao {
     }
 
     public Question retrieve(int questionId) throws SQLException {
-        try (Connection connection = datasource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(
-                    "select * from question where question_id = ?"
-            )) {
-                statement.setInt(1, questionId);
-
-                try (ResultSet rs = statement.executeQuery()) {
-                    rs.next();
-
-                    return mapFromResultSet(rs);
-                }
-            }
-        }
+        return super.retrieve("select * from question where question_id = ?", questionId);
     }
 
-    private Question mapFromResultSet(ResultSet rs) throws SQLException {
+    @Override
+    protected Question mapFromResultSet(ResultSet rs) throws SQLException {
         Question question = new Question();
         question.setQuestionId(rs.getInt("question_id"));
         question.setQuestionTitle(rs.getString("question_title"));
