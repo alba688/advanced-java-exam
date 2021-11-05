@@ -1,7 +1,6 @@
 package no.kristiania.Http;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,17 +11,18 @@ public class HttpReader {
     public Map<String, String> headerFields = new HashMap<>();
 
     public HttpReader(Socket socket) throws IOException {
-        statusLine = readLine(socket);
+        statusLine = HttpReader.readLine(socket);
         readHeader(socket);
         if (headerFields.containsKey("Content-Length")) {
-            messageBody = readBytes(socket.getInputStream(), getContentLength());
+            messageBody = HttpReader.readBytes(socket, getContentLength());
         }
     }
 
     static String readLine(Socket socket) throws IOException {
+
         StringBuilder line = new StringBuilder();
         int c;
-        while ((c = socket.getInputStream().read()) != '\r' ) {
+        while ((c = socket.getInputStream().read()) != '\r') {
             line.append((char) c);
         }
         int expectedNewLine = socket.getInputStream().read();
@@ -30,13 +30,27 @@ public class HttpReader {
         return line.toString();
     }
 
+    /*
+    StringBuilder buffer = new StringBuilder();
+        int c;
+        while ((c = socket.getInputStream().read()) != '\r') {
+            buffer.append((char)c);
+        }
+        int expectedNewline = socket.getInputStream().read();
+        assert expectedNewline == '\n';
+        return buffer.toString();
+    }
+    */
+
     /* in previous ABK we passed Socket instead of InputStream */
     /* then (char)socket.getInputStream().read() -- believe this does the same?? */
 
-    static String readBytes(InputStream in, int contentLength) throws IOException {
+    // Fixed this, so the socket is used everywhere
+
+    static String readBytes(Socket socket, int contentLength) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < contentLength ; i++) {
-            result.append((char)in.read());
+            result.append((char)socket.getInputStream().read());
         }
         return result.toString();
     }

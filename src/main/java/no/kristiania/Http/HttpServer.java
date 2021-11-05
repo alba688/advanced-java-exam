@@ -51,7 +51,6 @@ public class HttpServer {
         }
 
         String response;
-        String responseText = "File not found: " + requestTarget;
 
         // Handle queries inside of request target
         int questionPos = requestTarget.indexOf('?');
@@ -69,16 +68,16 @@ public class HttpServer {
         if (fileTarget.equals("/hello")) {
             String yourName = "world";
 
-        if (query != null) {
-            Map<String, String> queryMap = parseRequestParameters(query);
-            yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
-        }
-        responseText = "Hello " +yourName;
+            if (query != null) {
+                Map<String, String> queryMap = parseRequestParameters(query);
+                yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
+            }
+        String responseText = "Hello " +yourName;
         write200OKResponse(responseText, "text/plain", clientSocket);
 
         } else {
             if(contentRoot !=  null && Files.exists(contentRoot.resolve(fileTarget.substring(1)))) {
-                responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
+                String responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
                 String contentType;
 
                 if (requestTarget.endsWith(".html")) {
@@ -91,7 +90,7 @@ public class HttpServer {
                 write200OKResponse(responseText, contentType, clientSocket);
 
             } else if (fileTarget.equals("/api/questions")) {
-                responseText = "";
+                String responseText = "No questions found";
                 for (Question question : questions) {
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
@@ -106,7 +105,7 @@ public class HttpServer {
                 write200OKResponse(responseText, "text/html", clientSocket);
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
-                responseText = "";
+                String responseText = "No questionnaires";
                 int value = 1;
                 for (Questionnaire questionnaire : questionnaires) {
                     responseText += "<option value=\""+(value++)+"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
@@ -136,9 +135,11 @@ public class HttpServer {
                 write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
+                String responseText = "File not found: " + requestTarget;
                 response = "HTTP/1.1 404 File not found\r\n" +
                             "Content-Length: " + responseText.getBytes().length + "\r\n" +
                             "Content-Type: text/plain\r\n" +
+                            "Connection: close\r\n" +
                             "\r\n" +
                             responseText;
                 clientSocket.getOutputStream().write(response.getBytes());
@@ -159,11 +160,11 @@ public class HttpServer {
     }
 
     private void write200OKResponse(String responseText, String contentType, Socket clientSocket) throws IOException {
-        String response;
-        response = "HTTP/1.1 200 OK\r\n"+
+        String response = "HTTP/1.1 200 OK\r\n"+
                 "Content-Length: "+ responseText.getBytes().length + "\r\n" +
                 "Content-Type: " + contentType + "\r\n" +
-                "Connection: close"+ "\r\n\r\n" +
+                "Connection: close"+ "\r\n" +
+                "\r\n" +
                 responseText;
         clientSocket.getOutputStream().write(response.getBytes());
 
