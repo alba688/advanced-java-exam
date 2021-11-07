@@ -30,11 +30,6 @@ public class HttpReader {
         return line.toString();
     }
 
-    /* in previous ABK we passed Socket instead of InputStream */
-    /* then (char)socket.getInputStream().read() -- believe this does the same?? */
-
-    // Fixed this, so the socket is used everywhere
-
     static String readBytes(Socket socket, int contentLength) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < contentLength ; i++) {

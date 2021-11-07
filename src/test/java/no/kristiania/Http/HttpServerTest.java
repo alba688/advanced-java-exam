@@ -1,5 +1,7 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.DaoTest.TestData;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
@@ -8,8 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -79,23 +81,7 @@ public class HttpServerTest {
         assertEquals("Hello Test Tester", client.getMessageBody());
 
     }
-    @Test
-    void shouldShowQuestionOptions() throws IOException {
-        Questionnaire firstQuestionnaire = new Questionnaire();
-        firstQuestionnaire.setQuestionnaireTitle("Matvaner");
-        Questionnaire secondQuestionnaire = new Questionnaire();
-        secondQuestionnaire.setQuestionnaireTitle("Sosiale Vaner");
 
-
-        server.setListOfQuestionnaires(List.of(firstQuestionnaire, secondQuestionnaire));
-
-        HttpClient client = new HttpClient(
-                "localhost",
-                server.getPort(),
-                "/api/listQuestionnaires");
-        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
-                client.getMessageBody());
-    }
 
     @Test
     void shouldCreateNewQuestion() throws IOException {
@@ -113,17 +99,43 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldCreateNewQuestionnaire() throws IOException {
+    void shouldCreateNewQuestionnaire() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        server.setQuestionnaireDao(questionnaireDao);
+
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
                 "/api/newQuestionnaire",
-                "title=questionnaireTitle&text=questionnaireText"
+                "id=1&title=questionnaireTitle&text=questionnaireText"
         );
         assertEquals(200, postClient.getStatusCode());
-        Questionnaire questionnaire = server.getQuestionnaire().get(0);
+
+        Questionnaire questionnaire = questionnaireDao.retrieve(4); // dette er en dårlig løsning, og lurer på om testen er overflødig.
         assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
         assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
+    }
+
+    @Test
+    void shouldShowQuestionOptions() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+        Questionnaire firstQuestionnaire = new Questionnaire();
+        firstQuestionnaire.setQuestionnaireTitle("Matvaner");
+        Questionnaire secondQuestionnaire = new Questionnaire();
+        secondQuestionnaire.setQuestionnaireTitle("Sosiale Vaner");
+        questionnaireDao.save(firstQuestionnaire);
+        questionnaireDao.save(secondQuestionnaire);
+
+
+        server.setQuestionnaireDao(questionnaireDao);
+
+        HttpClient client = new HttpClient(
+                "localhost",
+                server.getPort(),
+                "/api/listQuestionnaires");
+        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
+                client.getMessageBody());
     }
 
     @Test

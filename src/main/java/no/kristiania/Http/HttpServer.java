@@ -1,5 +1,6 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
@@ -15,13 +16,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.*;
 
 public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
-    private List<Questionnaire> questionnaires = new ArrayList<>();
     private List<Question> questions = new ArrayList<>();
+    private QuestionnaireDao questionnairedao;
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -36,10 +38,13 @@ public class HttpServer {
         } catch (IOException e) {
             System.out.println("No Connection for socket");
             e.printStackTrace();
+        } catch (SQLException sqlException) {
+            System.out.println("No SQL connection");
+            sqlException.printStackTrace();
         }
     }
 
-    private void handleClient() throws IOException {
+    private void handleClient() throws IOException, SQLException {
         Socket clientSocket = serverSocket.accept();
 
         HttpReader httpReader = new HttpReader(clientSocket);
@@ -110,9 +115,8 @@ public class HttpServer {
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
-                int value = 1;
-                for (Questionnaire questionnaire : questionnaires) {
-                    responseText += "<option value=\""+(value++)+"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
+                for (Questionnaire questionnaire : questionnairedao.listAll()) {
+                    responseText += "<option value=\""+ questionnaire.getQuestionnaire_id() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -138,7 +142,7 @@ public class HttpServer {
                 Questionnaire questionnaire = new Questionnaire();
                 questionnaire.setQuestionnaireTitle(queryMap.get("title"));
                 questionnaire.setQuestionnaireText(queryMap.get("text"));
-                questionnaires.add(questionnaire);
+                questionnairedao.save(questionnaire);
                 write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
@@ -158,7 +162,7 @@ public class HttpServer {
         Map<String, String> queryMap = new HashMap<>();
         for (String queryParameter : query.split("&")) {
             int equalPos = queryParameter.indexOf("=");
-            String parameterName  =queryParameter.substring(0, equalPos);
+            String parameterName  = queryParameter.substring(0, equalPos);
             String parameterValue = URLDecoder.decode(queryParameter.substring(equalPos+1), StandardCharsets.UTF_8);
             queryMap.put(parameterName,parameterValue);
         }
@@ -185,23 +189,16 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public void setListOfQuestionnaires(List<Questionnaire> questionnaire) {
-        this.questionnaires = questionnaire;
+    public QuestionnaireDao getQuestionnairedao() {
+        return questionnairedao;
+    }
+
+    public void setQuestionnaireDao(QuestionnaireDao questionnairedao) {
+        this.questionnairedao = questionnairedao;
     }
 
     public List<Question> getQuestion() {
         return questions;
-    }
-
-    public List<Questionnaire> getQuestionnaires() {
-        return questionnaires;
-    }
-
-    public void setQuestionnaires(List<Questionnaire> questionnaires) {
-        this.questionnaires = questionnaires;
-    }
-    public List<Questionnaire> getQuestionnaire() {
-        return questionnaires;
     }
 
     private static DataSource createDataSource() throws IOException {
@@ -210,20 +207,18 @@ public class HttpServer {
             properties.load(reader);
         }
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        dataSource.setUrl(properties.getProperty("dataSource.url", "jdbc:postgresql://localhost/5432/questionnaire_db"));
-        dataSource.setUser(properties.getProperty("dataSource.user", "questionnare_dbuser"));
-        dataSource.setPassword("dataSource.password");
+        dataSource.setUrl(properties.getProperty("dataSource.url", "jdbc:postgresql://localhost:5432/questionnaire_db"));
+        dataSource.setUser(properties.getProperty("dataSource.user", "questionnaire_dbuser"));
+        dataSource.setPassword(properties.getProperty("dataSource.password"));
         Flyway.configure().dataSource(dataSource).load().migrate();
         return dataSource;
     }
 
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaireTitle("Test Questionnaire");
-
-        server.setListOfQuestionnaires(List.of(questionnaire));
         server.setContentRoot(Paths.get("src/main/resources"));
+        server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
+
     }
 
 
