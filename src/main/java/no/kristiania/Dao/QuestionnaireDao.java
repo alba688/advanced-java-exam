@@ -5,6 +5,7 @@ import no.kristiania.Objects.Questionnaire;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.*;
+import java.util.List;
 
 public class QuestionnaireDao extends AbstractDao<Questionnaire>{
 
@@ -34,6 +35,10 @@ public class QuestionnaireDao extends AbstractDao<Questionnaire>{
 
     public Questionnaire retrieve(int id) throws SQLException {
         return super.retrieve("select * from questionnaire where questionnaire_id = (?)", id);
+    }
+
+    public List<Questionnaire> listAll() throws SQLException {
+        return super.listAll("select * from questionnaire");
     }
 
     @Override

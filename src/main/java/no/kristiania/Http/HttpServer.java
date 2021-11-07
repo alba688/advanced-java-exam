@@ -2,7 +2,11 @@ package no.kristiania.Http;
 
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
+import org.flywaydb.core.Flyway;
+import org.postgresql.ds.PGSimpleDataSource;
 
+import javax.sql.DataSource;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,10 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpServer {
     private ServerSocket serverSocket;
@@ -199,6 +200,22 @@ public class HttpServer {
     public void setQuestionnaires(List<Questionnaire> questionnaires) {
         this.questionnaires = questionnaires;
     }
+    public List<Questionnaire> getQuestionnaire() {
+        return questionnaires;
+    }
+
+    private static DataSource createDataSource() throws IOException {
+        Properties properties = new Properties();
+        try (FileReader reader = new FileReader("pgr203.properties")) {
+            properties.load(reader);
+        }
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setUrl(properties.getProperty("dataSource.url", "jdbc:postgresql://localhost/5432/questionnaire_db"));
+        dataSource.setUser(properties.getProperty("dataSource.user", "questionnare_dbuser"));
+        dataSource.setPassword("dataSource.password");
+        Flyway.configure().dataSource(dataSource).load().migrate();
+        return dataSource;
+    }
 
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
@@ -209,7 +226,5 @@ public class HttpServer {
         server.setContentRoot(Paths.get("src/main/resources"));
     }
 
-    public List<Questionnaire> getQuestionnaire() {
-        return questionnaires;
-    }
+
 }

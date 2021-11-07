@@ -4,6 +4,7 @@ import no.kristiania.Objects.Question;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 public class QuestionDao extends AbstractDao<Question> {
 
@@ -36,6 +37,10 @@ public class QuestionDao extends AbstractDao<Question> {
 
     public Question retrieve(int questionId) throws SQLException {
         return super.retrieve("select * from question where question_id = ?", questionId);
+    }
+
+    public List<Question> listAll() throws SQLException {
+        return super.listAll("select * from question");
     }
 
     @Override

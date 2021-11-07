@@ -1,6 +1,7 @@
 package no.kristiania.DaoTest;
 
 import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,20 @@ public class QuestionnaireDaoTest {
         assertThat(dao.retrieve(questionnaire.getQuestionnaire_id()))
                 .usingRecursiveComparison()
                 .isEqualTo(questionnaire);
+    }
+
+    @Test
+    void shouldListAllQuestions() throws SQLException {
+        Questionnaire questionnaire = exampleQuestionnaire();
+        dao.save(questionnaire);
+        Questionnaire anotherQuestionnaire = exampleQuestionnaire();
+        dao.save(anotherQuestionnaire);
+
+        assertThat(dao.listAll())
+                .extracting(Questionnaire::getQuestionnaire_id)
+                .contains(questionnaire.getQuestionnaire_id(), anotherQuestionnaire.getQuestionnaire_id());
+
+
     }
 
 

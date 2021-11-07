@@ -1,3 +1,5 @@
 *.iml,
 target/
 .idea/
+
+pgr203.properties

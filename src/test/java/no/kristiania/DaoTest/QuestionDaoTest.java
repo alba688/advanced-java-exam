@@ -24,6 +24,20 @@ public class QuestionDaoTest {
                 .isEqualTo(question);
     }
 
+    @Test
+    void shouldListAllQuestions() throws SQLException {
+        Question question = exampleQuestion();
+        dao.save(question);
+        Question anotherQuestion = exampleQuestion();
+        dao.save(anotherQuestion);
+
+        assertThat(dao.listAll())
+        .extracting(Question::getQuestionId)
+                .contains(question.getQuestionId(), anotherQuestion.getQuestionId());
+
+
+    }
+
     private Question exampleQuestion() {
         Question question = new Question();
         question.setQuestionTitle(TestData.pickOne("Coffee or tea?", "Apple or Banana?", "Pizza or Hamburger?", "Black or White?"));

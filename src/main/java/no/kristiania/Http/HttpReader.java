@@ -30,18 +30,6 @@ public class HttpReader {
         return line.toString();
     }
 
-    /*
-    StringBuilder buffer = new StringBuilder();
-        int c;
-        while ((c = socket.getInputStream().read()) != '\r') {
-            buffer.append((char)c);
-        }
-        int expectedNewline = socket.getInputStream().read();
-        assert expectedNewline == '\n';
-        return buffer.toString();
-    }
-    */
-
     /* in previous ABK we passed Socket instead of InputStream */
     /* then (char)socket.getInputStream().read() -- believe this does the same?? */
 
