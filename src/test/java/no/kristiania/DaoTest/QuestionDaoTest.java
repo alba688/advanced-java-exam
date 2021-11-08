@@ -1,8 +1,10 @@
 package no.kristiania.DaoTest;
 
 import no.kristiania.Dao.QuestionDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Question;
 
+import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -12,9 +14,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionDaoTest {
     private QuestionDao dao = new QuestionDao(TestData.testDataSource());
+    private QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+
+
 
     @Test
     void shouldSaveAndRetrieveQuestionFromDatabase() throws SQLException {
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaire_id(1);
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaire.setQuestionnaireText("Text");
+        questionnaireDao.save(questionnaire);
+
         Question question = exampleQuestion();
 
         dao.save(question);
@@ -26,6 +38,12 @@ public class QuestionDaoTest {
 
     @Test
     void shouldListAllQuestions() throws SQLException {
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaire_id(1);
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaire.setQuestionnaireText("Text");
+        questionnaireDao.save(questionnaire);
+
         Question question = exampleQuestion();
         dao.save(question);
         Question anotherQuestion = exampleQuestion();
@@ -44,6 +62,7 @@ public class QuestionDaoTest {
         question.setLowLabel(TestData.pickOne("No", "None", "Negative"));
         question.setHighLabel(TestData.pickOne("Yes", "Good", "Amazing"));
         question.setNumberOfValues(new Random().nextInt(10));
+        question.setQuestionnaireId(1);
         return question;
     }
 

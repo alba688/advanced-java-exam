@@ -114,6 +114,8 @@ public class HttpServer {
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
+           // } else if (fileTarget.equals){
+
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
                 for (Questionnaire questionnaire : questionnaireDao.listAll()) {

@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HttpServerTest {
 
     private final HttpServer server = new HttpServer(0);
+    QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
 
     public HttpServerTest() throws IOException {
     }
@@ -93,6 +94,13 @@ public class HttpServerTest {
 
     @Test
     void shouldCreateNewQuestion() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaire_id(1);
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaire.setQuestionnaireText("Text");
+        questionnaireDao.save(questionnaire);
+
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
         server.setQuestionDao(questionDao);
         HttpPostClient postClient = new HttpPostClient(
@@ -103,7 +111,7 @@ public class HttpServerTest {
         );
         assertEquals(200, postClient.getStatusCode());
         Question question = server.getQuestionDao().retrieve(1);
-        assertEquals(0 ,question.getQuestionnaireId());
+        assertEquals(1 ,question.getQuestionnaireId());
         assertEquals("What is your name?", question.getQuestionTitle());
 
     }
@@ -129,7 +137,6 @@ public class HttpServerTest {
     @Test
     void shouldShowQuestionOptions() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
-
         Questionnaire firstQuestionnaire = new Questionnaire();
         firstQuestionnaire.setQuestionnaireTitle("Matvaner");
         Questionnaire secondQuestionnaire = new Questionnaire();
@@ -150,6 +157,14 @@ public class HttpServerTest {
 
     @Test
     void shouldShowQuestionWithText() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaire.setQuestionnaireText("Text");
+
+        questionnaireDao.save(questionnaire);
+
+
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
         server.setQuestionDao(questionDao);
 
@@ -158,10 +173,29 @@ public class HttpServerTest {
         question.setLowLabel("Not at all");
         question.setHighLabel("Love it");
         question.setNumberOfValues(5);
+        question.setQuestionnaireId(1);
         server.getQuestionDao().save(question);
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
         assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>Love it</label></form>", client.getMessageBody());
 
     }
 
+    @Test
+    void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Chosen questionnaire");
+
+        Question question = new Question();
+        question.setQuestionTitle("Question Title");
+        question.setLowLabel("Low");
+        question.setHighLabel("High");
+        question.setNumberOfValues(5);
+        question.setQuestionnaireId(questionnaire.getQuestionnaire_id());
+
+        HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
+        HttpClient client = new HttpClient("localhost", server.getPort(),"/api/listQuestionnaireQuestions");
+        assertEquals("<h1>Chosen questionnaire<h1><p>Question Title</p><form method=\"\" action=\"\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label></form>", client.getMessageBody());
+
+    }
 }
