@@ -1,5 +1,6 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
 import no.kristiania.Objects.Question;
@@ -91,7 +92,9 @@ public class HttpServerTest {
 
 
     @Test
-    void shouldCreateNewQuestion() throws IOException {
+    void shouldCreateNewQuestion() throws IOException, SQLException {
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        server.setQuestionDao(questionDao);
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
@@ -99,8 +102,8 @@ public class HttpServerTest {
                 "questionnaires=1&title=What+is+your+name%3F&values=5"
         );
         assertEquals(200, postClient.getStatusCode());
-        Question question = server.getQuestion().get(0);
-        assertEquals(1 ,question.getQuestionnaireId());
+        Question question = server.getQuestionDao().retrieve(1);
+        assertEquals(0 ,question.getQuestionnaireId());
         assertEquals("What is your name?", question.getQuestionTitle());
 
     }
@@ -114,7 +117,7 @@ public class HttpServerTest {
                 "localhost",
                 server.getPort(),
                 "/api/newQuestionnaire",
-                "id=1&title=questionnaireTitle&text=questionnaireText"
+                "title=questionnaireTitle&text=questionnaireText"
         );
         assertEquals(200, postClient.getStatusCode());
 
@@ -146,15 +149,18 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldShowQuestionWithText() throws IOException {
+    void shouldShowQuestionWithText() throws IOException, SQLException {
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        server.setQuestionDao(questionDao);
+
         Question question = new Question();
         question.setQuestionTitle("Do you like pizza?");
         question.setLowLabel("Not at all");
         question.setHighLabel("Love it");
         question.setNumberOfValues(5);
-        server.getQuestion().add(question);
+        server.getQuestionDao().save(question);
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
-        assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question0_answer\"></input><input value=\"1\"type=\"radio\" name=\"question0_answer\"></input><input value=\"2\"type=\"radio\" name=\"question0_answer\"></input><input value=\"3\"type=\"radio\" name=\"question0_answer\"></input><input value=\"4\"type=\"radio\" name=\"question0_answer\"></input><label>Love it</label></form>", client.getMessageBody());
+        assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>Love it</label></form>", client.getMessageBody());
 
     }
 

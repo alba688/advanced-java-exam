@@ -1,5 +1,6 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
@@ -22,8 +23,8 @@ import java.util.*;
 public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
-    private List<Question> questions = new ArrayList<>();
-    private QuestionnaireDao questionnairedao;
+    private QuestionDao questionDao;
+    private QuestionnaireDao questionnaireDao;
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -97,7 +98,7 @@ public class HttpServer {
 
             } else if (fileTarget.equals("/api/questions")) {
                 String responseText = "";
-                for (Question question : questions) {
+                for (Question question : questionDao.listAll()) {
 
                     responseText +=
                             "<p>" + question.getQuestionTitle() +
@@ -115,7 +116,7 @@ public class HttpServer {
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
-                for (Questionnaire questionnaire : questionnairedao.listAll()) {
+                for (Questionnaire questionnaire : questionnaireDao.listAll()) {
                     responseText += "<option value=\""+ questionnaire.getQuestionnaire_id() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
@@ -123,7 +124,6 @@ public class HttpServer {
             } else if (fileTarget.equals("/api/newQuestion")) {
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Question question = new Question();
-                // should these be questionText and questionTitle ??
 
                 int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
                 question.setQuestionnaireId(questionnaireID);
@@ -133,7 +133,7 @@ public class HttpServer {
                 int numberOfValues = Integer.parseInt(queryMap.get("values"));
 
                 question.setNumberOfValues(numberOfValues);
-                questions.add(question);
+                questionDao.save(question);
                 write200OKResponse("Question added", "text/plain", clientSocket);
 
             }
@@ -142,7 +142,7 @@ public class HttpServer {
                 Questionnaire questionnaire = new Questionnaire();
                 questionnaire.setQuestionnaireTitle(queryMap.get("title"));
                 questionnaire.setQuestionnaireText(queryMap.get("text"));
-                questionnairedao.save(questionnaire);
+                questionnaireDao.save(questionnaire);
                 write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
@@ -189,16 +189,21 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public QuestionnaireDao getQuestionnairedao() {
-        return questionnairedao;
+    public QuestionnaireDao getQuestionnaireDao() {
+        return questionnaireDao;
     }
 
     public void setQuestionnaireDao(QuestionnaireDao questionnairedao) {
-        this.questionnairedao = questionnairedao;
+        this.questionnaireDao = questionnairedao;
     }
 
-    public List<Question> getQuestion() {
-        return questions;
+
+    public QuestionDao getQuestionDao() {
+        return questionDao;
+    }
+
+    public void setQuestionDao(QuestionDao questionDao) {
+        this.questionDao = questionDao;
     }
 
     private static DataSource createDataSource() throws IOException {
@@ -218,6 +223,7 @@ public class HttpServer {
         HttpServer server = new HttpServer(10001);
         server.setContentRoot(Paths.get("src/main/resources"));
         server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
+        server.setQuestionDao(new QuestionDao(createDataSource()));
 
     }
 

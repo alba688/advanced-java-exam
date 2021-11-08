@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpReader {
-    public static String statusLine;
+    public String statusLine;
     public String messageBody;
     public Map<String, String> headerFields = new HashMap<>();
 
@@ -41,7 +41,7 @@ public class HttpReader {
     private void readHeader(Socket socket) throws IOException {
         String headerLine;
 
-        while (!(headerLine = readLine(socket)).isBlank()) {
+        while (!(headerLine = HttpReader.readLine(socket)).isBlank()) {
             int colonPos = headerLine.indexOf(':');
             String key = headerLine.substring(0, colonPos);
             String value = headerLine.substring(colonPos + 1).trim();
