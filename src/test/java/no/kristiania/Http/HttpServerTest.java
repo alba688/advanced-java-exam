@@ -4,6 +4,8 @@ import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -20,6 +22,11 @@ public class HttpServerTest {
     private final HttpServer server = new HttpServer(0);
 
     public HttpServerTest() throws IOException {
+    }
+
+    @BeforeEach
+    void setup() {
+        Flyway.configure().dataSource(TestData.testDataSource()).load().clean();
     }
 
     @Test
@@ -111,7 +118,7 @@ public class HttpServerTest {
         );
         assertEquals(200, postClient.getStatusCode());
 
-        Questionnaire questionnaire = questionnaireDao.retrieve(4); // dette er en dårlig løsning, og lurer på om testen er overflødig.
+        Questionnaire questionnaire = questionnaireDao.retrieve(1);
         assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
         assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
     }

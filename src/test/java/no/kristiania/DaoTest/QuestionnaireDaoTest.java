@@ -3,14 +3,19 @@ package no.kristiania.DaoTest;
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+
 public class QuestionnaireDaoTest {
     private QuestionnaireDao dao = new QuestionnaireDao(TestData.testDataSource());
+
+
 
     @Test
     void shouldSaveAndRetrieveQuestionnaireFromDatabase() throws SQLException {
