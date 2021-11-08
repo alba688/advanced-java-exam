@@ -2,4 +2,4 @@
 target/
 .idea/
 
-pgr203.properties
+/pgr203.properties
