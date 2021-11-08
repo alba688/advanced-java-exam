@@ -28,4 +28,8 @@ public class HttpPostClient {
         return statusCode;
     }
 
+    public String getMessageBody() {
+        return httpReader.messageBody;
+    }
+
 }
