@@ -114,7 +114,69 @@ public class HttpServer {
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
-           // } else if (fileTarget.equals){
+            } else if (fileTarget.equals("/api/listQuestions")) {
+                String responseText = "";
+
+                for (Question question : questionDao.listAll()) {
+                    responseText += "<option value=\""+ question.getQuestionId() +"\">"+ question.getQuestionTitle() +"</option>";
+                }
+                write200OKResponse(responseText, "text/html", clientSocket);
+
+            } else if (fileTarget.equals("/api/editQuestion")){
+                String responseTxt = "";
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+
+                // retrieves the questionId to be edited
+                Question question = questionDao.retrieve(Integer.parseInt(queryMap.get("questions")));
+
+                // updates data using setters
+                question.setQuestionTitle("title");
+                question.setLowLabel("low_label");
+                question.setHighLabel("high_label");
+                int numberOfValues = Integer.parseInt(queryMap.get("values"));
+                question.setNumberOfValues(numberOfValues);
+
+                // sends updated question to edit method to deploy sql statement
+                questionDao.edit(question);
+
+                write200OKResponse("Edit complete", "text/plain", clientSocket);
+
+                //Example query parameters: questions=2&title=Bread+or+cake&low_label=Bread&high_label=Cake&values=3
+
+            } else if (fileTarget.equals("/api/showQuestionnaireQuestions")){
+                String responseTxt = "";
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+
+                Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
+
+
+                responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
+
+                ArrayList <Question> listOfQuestions = new ArrayList<>();
+
+                    for (Question question : questionDao.listAll()) {
+                        if ((question.getQuestionnaireId() == Integer.parseInt(queryMap.get("questionnaires")))) {
+                            listOfQuestions.add(question);
+                        }
+                    }
+
+                String questionTxt = "";
+
+                for (Question question : listOfQuestions){
+                     questionTxt += "<p>" + question.getQuestionTitle() +
+                            "</p>" +
+                            "<form method=\"\" action=\"\"><label>" + question.getLowLabel() +"</label>";
+
+
+                    for (int i = 0; i < question.getNumberOfValues(); i++){
+                        questionTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
+                    }
+                    questionTxt +="<label>" + question.getHighLabel() + "</label>" +
+                            "</form>";
+
+                }
+                    responseTxt += questionTxt;
+                write200OKResponse(responseTxt, "text/html", clientSocket);
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";

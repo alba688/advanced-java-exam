@@ -181,10 +181,17 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException {
+    void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        server.setQuestionnaireDao(questionnaireDao);
+
+
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        server.setQuestionDao(questionDao);
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaireTitle("Chosen questionnaire");
+        questionnaire.setQuestionnaire_id(1);
+        questionnaireDao.save(questionnaire);
 
         Question question = new Question();
         question.setQuestionTitle("Question Title");
@@ -193,9 +200,11 @@ public class HttpServerTest {
         question.setNumberOfValues(5);
         question.setQuestionnaireId(questionnaire.getQuestionnaire_id());
 
+        questionDao.save(question);
+
+
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
-        HttpClient client = new HttpClient("localhost", server.getPort(),"/api/listQuestionnaireQuestions");
-        assertEquals("<h1>Chosen questionnaire<h1><p>Question Title</p><form method=\"\" action=\"\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label></form>", client.getMessageBody());
+        assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"\" action=\"\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label></form>", postClient.getMessageBody());
 
     }
 }

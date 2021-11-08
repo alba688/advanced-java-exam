@@ -1,5 +1,7 @@
 package no.kristiania.Dao;
 
+import no.kristiania.Objects.Question;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,6 +47,5 @@ public abstract class AbstractDao<T> {
             }
         }
     }
-
 
 }

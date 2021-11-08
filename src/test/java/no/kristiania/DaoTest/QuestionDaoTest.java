@@ -52,8 +52,24 @@ public class QuestionDaoTest {
         assertThat(dao.listAll())
         .extracting(Question::getQuestionId)
                 .contains(question.getQuestionId(), anotherQuestion.getQuestionId());
+    }
 
+    @Test
+    void shouldEditASpecificQuestion() throws SQLException {
+        Question question = exampleQuestion();
+        dao.save(question);
 
+        Question fixedQuestion = new Question();
+        fixedQuestion.setQuestionId(question.getQuestionId());
+        fixedQuestion.setQuestionTitle("This question is fixed");
+        fixedQuestion.setLowLabel("Low test");
+        fixedQuestion.setHighLabel("High test");
+        fixedQuestion.setNumberOfValues(2);
+        fixedQuestion.setQuestionnaireId(1);
+        dao.edit(fixedQuestion);
+
+        assertThat(dao.retrieve(question.getQuestionId()))
+                .usingRecursiveComparison().isEqualTo(fixedQuestion);
     }
 
     private Question exampleQuestion() {
