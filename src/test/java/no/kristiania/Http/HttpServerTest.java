@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HttpServerTest {
 
     private final HttpServer server = new HttpServer(0);
-    QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
 
     public HttpServerTest() throws IOException {
     }
@@ -183,10 +183,8 @@ public class HttpServerTest {
     @Test
     void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
-        server.setQuestionnaireDao(questionnaireDao);
-
-
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        server.setQuestionnaireDao(questionnaireDao);
         server.setQuestionDao(questionDao);
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaireTitle("Chosen questionnaire");
@@ -204,7 +202,8 @@ public class HttpServerTest {
 
 
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
-        assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"\" action=\"\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label></form>", postClient.getMessageBody());
+
+        assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
 
     }
 }
