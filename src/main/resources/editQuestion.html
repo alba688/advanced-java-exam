@@ -19,14 +19,6 @@
   <a href=".">Return to front page</a>
 </div>
 </body>
-<!--<script>-->
-<!--  fetch("/api/listQuestions")-->
-<!--          .then(function(response) {-->
-<!--            return response.text();-->
-<!--          }).then(function(text) {-->
-<!--    document.getElementById("questions").innerHTML = text;-->
-<!--  });-->
-<!--</script>-->
 <script>
   fetch("/api/listQuestions")
           .then(function(response) {
@@ -34,7 +26,5 @@
           }).then(function(text) {
     document.getElementById("questions").innerHTML = text;
   });
-
-
 </script>
 </html>

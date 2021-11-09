@@ -47,6 +47,7 @@ public abstract class AbstractDao<T> {
             }
         }
     }
+
     protected List<T> listAllWithParameter(String sql, int id) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -77,4 +78,13 @@ public abstract class AbstractDao<T> {
         }
     }
 
+    protected void delete(String sql, int id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, id);
+
+                statement.executeUpdate();
+            }
+        }
+    }
 }

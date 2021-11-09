@@ -72,6 +72,23 @@ public class QuestionDaoTest {
                 .usingRecursiveComparison().isEqualTo(fixedQuestion);
     }
 
+    @Test
+    void shouldDeleteASpecificQuestion() throws SQLException {
+        Question questionToDelete = exampleQuestion();
+        dao.save(questionToDelete);
+
+        Question questionToSave = exampleQuestion();
+        dao.save(questionToSave);
+
+        dao.delete(questionToDelete.getQuestionId());
+
+        assertThat(dao.listAll())
+                .extracting(Question::getQuestionId)
+                .contains(questionToSave.getQuestionId())
+                .doesNotContain(questionToDelete.getQuestionId());
+
+    }
+
     private Question exampleQuestion() {
         Question question = new Question();
         question.setQuestionTitle(TestData.pickOne("Coffee or tea?", "Apple or Banana?", "Pizza or Hamburger?", "Black or White?"));

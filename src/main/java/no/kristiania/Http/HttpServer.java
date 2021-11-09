@@ -122,8 +122,17 @@ public class HttpServer {
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
+            }  else if (fileTarget.equals("/api/deleteQuestion")){
+
+                // retrieves question to be deleted
+                Question question = questionDao.retrieve(Integer.parseInt((parseRequestParameters(httpReader.messageBody)).get("questions")));
+
+                questionDao.delete(question.getQuestionId());
+
+                write200OKResponse("Question deleted", "text/plain", clientSocket);
+
             } else if (fileTarget.equals("/api/editQuestion")){
-                String responseTxt = "";
+
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
 
                 // retrieves the questionId to be edited
@@ -140,8 +149,6 @@ public class HttpServer {
                 questionDao.edit(question);
 
                 write200OKResponse("Edit complete", "text/plain", clientSocket);
-
-         
 
             } else if (fileTarget.equals("/api/showQuestionnaireQuestions")){
                 String responseTxt = "";
