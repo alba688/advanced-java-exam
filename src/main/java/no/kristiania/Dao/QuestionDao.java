@@ -51,6 +51,23 @@ public class QuestionDao extends AbstractDao<Question> {
     }
 
 
+    public void edit(Question editedQuestion) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "update question set question_title = ?, low_label = ?, high_label = ?, number_of_values = ? where question_id = ?"
+            )) {
+                statement.setString(1, editedQuestion.getQuestionTitle());
+                statement.setString(2, editedQuestion.getLowLabel());
+                statement.setString(3, editedQuestion.getHighLabel());
+                statement.setInt(4, editedQuestion.getNumberOfValues());
+                statement.setInt(5, editedQuestion.getQuestionId());
+
+                statement.executeUpdate();
+            }
+        }
+    }
+
 
     @Override
     protected Question mapFromResultSet(ResultSet rs) throws SQLException {

@@ -113,6 +113,36 @@ public class HttpServer {
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
+
+            } else if (fileTarget.equals("/api/listQuestions")) {
+                String responseText = "";
+
+                for (Question question : questionDao.listAll()) {
+                    responseText += "<option value=\""+ question.getQuestionId() +"\">"+ question.getQuestionTitle() +"</option>";
+                }
+                write200OKResponse(responseText, "text/html", clientSocket);
+
+            } else if (fileTarget.equals("/api/editQuestion")){
+                String responseTxt = "";
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+
+                // retrieves the questionId to be edited
+                Question question = questionDao.retrieve(Integer.parseInt(queryMap.get("questions")));
+
+                // updates data using setters
+                question.setQuestionTitle(queryMap.get("title"));
+                question.setLowLabel(queryMap.get("low_label"));
+                question.setHighLabel(queryMap.get("high_label"));
+                int numberOfValues = Integer.parseInt(queryMap.get("values"));
+                question.setNumberOfValues(numberOfValues);
+
+                // sends updated question to edit method to deploy sql statement
+                questionDao.edit(question);
+
+                write200OKResponse("Edit complete", "text/plain", clientSocket);
+
+         
+
             } else if (fileTarget.equals("/api/showQuestionnaireQuestions")){
                 String responseTxt = "";
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
@@ -135,10 +165,6 @@ public class HttpServer {
                     }
                 responseTxt += "<button value=\"Send\">Send</button></form>";
                 write200OKResponse(responseTxt, "text/html", clientSocket);
-
-
-
-
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
