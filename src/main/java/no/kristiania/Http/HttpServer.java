@@ -207,9 +207,12 @@ public class HttpServer {
             } else if (fileTarget.equals("/api/listCategories")) {
                 String responseText = "";
                 for (Category category : categoryDao.listAll()) {
-                    responseText += "<option value=\""+ category.getCategoryId() +"\">"+ category.getCategoryTitle() +"</option>";
+                    responseText += "<option value=\"" + category.getCategoryId() + "\">" + category.getCategoryTitle() + "</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
+            } else if (fileTarget.equals("api/listQuestionnaires")) {
+
+
 
             } else if (fileTarget.equals("/api/newQuestion")) {
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);

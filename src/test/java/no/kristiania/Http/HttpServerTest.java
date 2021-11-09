@@ -154,6 +154,26 @@ public class HttpServerTest {
     }
 
     @Test
+    void shouldShowQuestionnaires() throws SQLException, IOException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        server.setQuestionnaireDao(questionnaireDao);
+        Questionnaire firstQuestionnaire = new Questionnaire();
+        firstQuestionnaire.setQuestionnaireTitle("Classes");
+        Questionnaire secondQuestionnaire = new Questionnaire();
+        secondQuestionnaire.setQuestionnaireTitle("Food");
+        questionnaireDao.save(firstQuestionnaire);
+        questionnaireDao.save(secondQuestionnaire);
+
+        HttpClient client = new HttpClient(
+                "localhost",
+                server.getPort(),
+            "/api/listQuestionnaires");
+        assertEquals("<option value=\"1\">Classes</option><option value=\"2\">Food</option>",
+                client.getMessageBody());
+
+    }
+
+    @Test
     void shouldShowQuestionCategories() throws IOException, SQLException {
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
         Category firstCategory = new Category();
