@@ -2,10 +2,10 @@ package no.kristiania.Http;
 
 import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
-import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Dao.CategoryDao;
 import no.kristiania.Objects.Answer;
+import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
-import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -26,7 +26,7 @@ public class HttpServer {
     private ServerSocket serverSocket;
     private Path contentRoot;
     private QuestionDao questionDao;
-    private QuestionnaireDao questionnaireDao;
+    private CategoryDao categoryDao;
     private AnswerDao answerDao;
 
     public HttpServer(int serverPort) throws IOException {
@@ -157,11 +157,11 @@ public class HttpServer {
                 String responseTxt = "";
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
 
-                Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
+                Category category = categoryDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
-                responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
+                responseTxt = "<h1>" + category.getCategoryTitle() + "</h1>";
                 int j = 0;
-                for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
+                for (Question question : questionDao.listAllWithParameter(category.getCategory_id())) {
                     responseTxt += "<p>" + question.getQuestionTitle() +
                             "</p>" +
                             "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
@@ -203,8 +203,8 @@ public class HttpServer {
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
-                for (Questionnaire questionnaire : questionnaireDao.listAll()) {
-                    responseText += "<option value=\""+ questionnaire.getQuestionnaire_id() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
+                for (Category category : categoryDao.listAll()) {
+                    responseText += "<option value=\""+ category.getCategory_id() +"\">"+ category.getCategoryTitle() +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -226,10 +226,10 @@ public class HttpServer {
             }
             else if (fileTarget.equals("/api/newQuestionnaire")){
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-                Questionnaire questionnaire = new Questionnaire();
-                questionnaire.setQuestionnaireTitle(queryMap.get("title"));
-                questionnaire.setQuestionnaireText(queryMap.get("text"));
-                questionnaireDao.save(questionnaire);
+                Category category = new Category();
+                category.setCategoryTitle(queryMap.get("title"));
+                category.setCategoryText(queryMap.get("text"));
+                categoryDao.save(category);
                 write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
@@ -276,12 +276,12 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public QuestionnaireDao getQuestionnaireDao() {
-        return questionnaireDao;
+    public CategoryDao getQuestionnaireDao() {
+        return categoryDao;
     }
 
-    public void setQuestionnaireDao(QuestionnaireDao questionnairedao) {
-        this.questionnaireDao = questionnairedao;
+    public void setQuestionnaireDao(CategoryDao questionnairedao) {
+        this.categoryDao = questionnairedao;
     }
 
     public AnswerDao getAnswerDao() {
@@ -316,7 +316,7 @@ public class HttpServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
         server.setContentRoot(Paths.get("src/main/resources"));
-        server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
+        server.setQuestionnaireDao(new CategoryDao(createDataSource()));
         server.setQuestionDao(new QuestionDao(createDataSource()));
         server.setAnswerDao(new AnswerDao(createDataSource()));
 

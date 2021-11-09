@@ -1,10 +1,10 @@
 package no.kristiania.DaoTest;
 
 import no.kristiania.Dao.QuestionDao;
-import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Dao.CategoryDao;
+import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
 
-import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -14,15 +14,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuestionDaoTest {
     private QuestionDao dao = new QuestionDao(TestData.testDataSource());
-    private QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+    private CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
 
     @Test
     void shouldSaveAndRetrieveQuestionFromDatabase() throws SQLException {
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaire_id(1);
-        questionnaire.setQuestionnaireTitle("Title");
-        questionnaire.setQuestionnaireText("Text");
-        questionnaireDao.save(questionnaire);
+        Category category = new Category();
+        category.setCategory_id(1);
+        category.setCategoryTitle("Title");
+        category.setCategoryText("Text");
+        categoryDao.save(category);
 
         Question question = exampleQuestion();
 
@@ -35,11 +35,11 @@ public class QuestionDaoTest {
 
     @Test
     void shouldListAllQuestions() throws SQLException {
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaire_id(1);
-        questionnaire.setQuestionnaireTitle("Title");
-        questionnaire.setQuestionnaireText("Text");
-        questionnaireDao.save(questionnaire);
+        Category category = new Category();
+        category.setCategory_id(1);
+        category.setCategoryTitle("Title");
+        category.setCategoryText("Text");
+        categoryDao.save(category);
 
         Question question = exampleQuestion();
         dao.save(question);
@@ -71,11 +71,11 @@ public class QuestionDaoTest {
 
     @Test
     void shouldDeleteASpecificQuestion() throws SQLException {
-        Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaire_id(1);
-        questionnaire.setQuestionnaireTitle("Title");
-        questionnaire.setQuestionnaireText("Text");
-        questionnaireDao.save(questionnaire);
+        Category category = new Category();
+        category.setCategory_id(1);
+        category.setCategoryTitle("Title");
+        category.setCategoryText("Text");
+        categoryDao.save(category);
 
         Question questionToDelete = exampleQuestion();
         dao.save(questionToDelete);
