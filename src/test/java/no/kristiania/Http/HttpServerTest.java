@@ -1,8 +1,10 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
+import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
@@ -202,8 +204,44 @@ public class HttpServerTest {
 
 
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
+        assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
 
+    }
+
+    @Test
+    void shouldCreateAnswer() throws IOException, SQLException {
+        AnswerDao answerDao = new AnswerDao(TestData.testDataSource());
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Chosen questionnaire");
+
+        server.setQuestionnaireDao(questionnaireDao);
+        questionnaireDao.save(questionnaire);
+
+        Question question = new Question();
+        question.setQuestionTitle("Question Title");
+        question.setNumberOfValues(10);
+        question.setQuestionnaireId(1);
+        server.setQuestionDao(questionDao);
+        questionDao.save(question);
+
+        server.setAnswerDao(answerDao);
+        Answer answer = new Answer();
+
+        answer.setAnswerValue(1);
+        answer.setQuestionId(1);
+
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/answerQuestionnaire",
+                "value=1&name=1"
+        );
+        assertEquals(200, postClient.getStatusCode());
         assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
+
 
     }
 }

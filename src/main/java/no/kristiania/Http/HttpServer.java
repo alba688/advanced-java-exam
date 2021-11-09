@@ -1,7 +1,9 @@
 package no.kristiania.Http;
 
+import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
@@ -25,6 +27,7 @@ public class HttpServer {
     private Path contentRoot;
     private QuestionDao questionDao;
     private QuestionnaireDao questionnaireDao;
+    private AnswerDao answerDao;
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -157,21 +160,46 @@ public class HttpServer {
                 Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
                 responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
+                int j = 0;
+                for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
+                    responseTxt += "<p>" + question.getQuestionTitle() +
+                            "</p>" +
+                            "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
 
-                    for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
-                        responseTxt += "<p>" + question.getQuestionTitle() +
-                                "</p>" +
-                                "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() +"</label>";
 
-
-                        for (int i = 0; i < question.getNumberOfValues(); i++){
-                            responseTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
-                        }
-                        responseTxt +="<label>" + question.getHighLabel() + "</label><br>";
+                    for (int i = 1; i < question.getNumberOfValues(); i++) {
+                        responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
+                    }
+                    j++;
+                    responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
 
                     }
+
                 responseTxt += "<button value=\"Send\">Send</button></form>";
                 write200OKResponse(responseTxt, "text/html", clientSocket);
+
+
+
+            } else if (fileTarget.equals("/api/answerQuestionnaire")) {
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+                Answer answer = new Answer();
+
+                for (int i = 0; i < queryMap.size(); i++) {
+                    if(queryMap.get("question"+i) != null) {
+                        String buffer = queryMap.get("question" + i);
+                        int valuePos = buffer.indexOf('v');
+                        int questionId = Integer.parseInt(buffer.substring(0, valuePos));
+                        int answerValue = Integer.parseInt(buffer.substring(valuePos+1));
+
+                        answer.setQuestionId(questionId);
+                        answer.setAnswerValue(answerValue);
+
+                        answerDao.save(answer);
+                    }
+                }
+                write200OKResponse("Thank You", "text/plain", clientSocket);
+
+
 
             } else if (fileTarget.equals("/api/listQuestionnaires")) {
                 String responseText = "";
@@ -190,8 +218,8 @@ public class HttpServer {
                 question.setLowLabel(queryMap.get("low_label"));
                 question.setHighLabel(queryMap.get("high_label"));
                 int numberOfValues = Integer.parseInt(queryMap.get("values"));
-
                 question.setNumberOfValues(numberOfValues);
+
                 questionDao.save(question);
                 write200OKResponse("Question added", "text/plain", clientSocket);
 
@@ -256,6 +284,13 @@ public class HttpServer {
         this.questionnaireDao = questionnairedao;
     }
 
+    public AnswerDao getAnswerDao() {
+        return answerDao;
+    }
+
+    public void setAnswerDao(AnswerDao answerDao) {
+        this.answerDao = answerDao;
+    }
 
     public QuestionDao getQuestionDao() {
         return questionDao;
@@ -283,6 +318,7 @@ public class HttpServer {
         server.setContentRoot(Paths.get("src/main/resources"));
         server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
         server.setQuestionDao(new QuestionDao(createDataSource()));
+        server.setAnswerDao(new AnswerDao(createDataSource()));
 
     }
 
