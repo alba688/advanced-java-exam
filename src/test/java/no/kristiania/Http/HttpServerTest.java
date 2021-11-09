@@ -186,7 +186,6 @@ public class HttpServerTest {
     void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
-
         server.setQuestionnaireDao(questionnaireDao);
         server.setQuestionDao(questionDao);
         Questionnaire questionnaire = new Questionnaire();
@@ -241,7 +240,7 @@ public class HttpServerTest {
                 "value=1&name=1"
         );
         assertEquals(200, postClient.getStatusCode());
-
+        assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
 
 
     }

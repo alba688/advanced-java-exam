@@ -51,6 +51,14 @@ public class QuestionDao extends AbstractDao<Question> {
     }
 
 
+    public void edit(Question editedQuestion) throws SQLException {
+        super.edit("update question set question_title = ?, low_label = ?, high_label = ?, number_of_values = ? where question_id = ?", editedQuestion);
+    }
+
+    public void delete(int questionId) throws SQLException {
+        super.delete("delete from question where question_id = ?", questionId);
+    }
+
 
     @Override
     protected Question mapFromResultSet(ResultSet rs) throws SQLException {

@@ -1,5 +1,7 @@
 package no.kristiania.Dao;
 
+import no.kristiania.Objects.Question;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,6 +47,7 @@ public abstract class AbstractDao<T> {
             }
         }
     }
+
     protected List<T> listAllWithParameter(String sql, int id) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -61,5 +64,27 @@ public abstract class AbstractDao<T> {
         }
     }
 
+    protected void edit(String sql, Question editedQuestion) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, editedQuestion.getQuestionTitle());
+                statement.setString(2, editedQuestion.getLowLabel());
+                statement.setString(3, editedQuestion.getHighLabel());
+                statement.setInt(4, editedQuestion.getNumberOfValues());
+                statement.setInt(5, editedQuestion.getQuestionId());
 
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    protected void delete(String sql, int id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, id);
+
+                statement.executeUpdate();
+            }
+        }
+    }
 }
