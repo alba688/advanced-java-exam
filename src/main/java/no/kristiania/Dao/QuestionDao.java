@@ -54,7 +54,7 @@ public class QuestionDao extends AbstractDao<Question> {
                 statement.setString(2, editedQuestion.getLowLabel());
                 statement.setString(3, editedQuestion.getHighLabel());
                 statement.setInt(4, editedQuestion.getNumberOfValues());
-                statement.setInt(5, editedQuestion.getQuestionnaireId());
+                statement.setInt(5, editedQuestion.getQuestionId());
 
                 statement.executeUpdate();
             }

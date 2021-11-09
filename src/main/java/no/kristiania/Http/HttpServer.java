@@ -130,9 +130,9 @@ public class HttpServer {
                 Question question = questionDao.retrieve(Integer.parseInt(queryMap.get("questions")));
 
                 // updates data using setters
-                question.setQuestionTitle("title");
-                question.setLowLabel("low_label");
-                question.setHighLabel("high_label");
+                question.setQuestionTitle(queryMap.get("title"));
+                question.setLowLabel(queryMap.get("low_label"));
+                question.setHighLabel(queryMap.get("high_label"));
                 int numberOfValues = Integer.parseInt(queryMap.get("values"));
                 question.setNumberOfValues(numberOfValues);
 
