@@ -210,8 +210,13 @@ public class HttpServer {
                     responseText += "<option value=\"" + category.getCategoryId() + "\">" + category.getCategoryTitle() + "</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
-            } else if (fileTarget.equals("api/listQuestionnaires")) {
 
+            } else if (fileTarget.equals("/api/listQuestionnaires")) {
+                String responseText = "";
+                for (Questionnaire questionnaire : questionnaireDao.listAll()) {
+                    responseText += "<option value=\"" + questionnaire.getQuestionnaireId() + "\">" + questionnaire.getQuestionnaireTitle() + "</option>";
+                }
+                write200OKResponse(responseText, "text/html", clientSocket);
 
 
             } else if (fileTarget.equals("/api/newQuestion")) {
@@ -328,9 +333,11 @@ public class HttpServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
         server.setContentRoot(Paths.get("src/main/resources"));
+        server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
         server.setCategoryDao(new CategoryDao(createDataSource()));
         server.setQuestionDao(new QuestionDao(createDataSource()));
         server.setAnswerDao(new AnswerDao(createDataSource()));
+
 
     }
 
