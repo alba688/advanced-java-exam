@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Show category</h1>
-    <form method="POST" action="/api/showQuestionnaireQuestions">
+    <form method="POST" action="/api/showQuestionnaire">
         <label>Select questionnaire: <select id="questionnaires" name="questionnaires" ></select></label><br>
         <button>Show</button>
     </form>
@@ -23,6 +23,5 @@
         }).then(function(text) {
         document.getElementById("questionnaires").innerHTML = text;
     });
-
 </script>
 </html>

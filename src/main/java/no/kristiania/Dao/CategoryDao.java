@@ -17,11 +17,12 @@ public class CategoryDao extends AbstractDao<Category>{
         try (Connection connection = dataSource.getConnection()) {
 
             try (PreparedStatement statement = connection.prepareStatement(
-                    "insert into category (category_title, category_text) values (?, ?)",
+                    "insert into category (category_title, category_text, questionnaire_id) values (?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, category.getCategoryTitle());
                 statement.setString(2, category.getCategoryText());
+                statement.setInt(3, category.getQuestionnaireId());
 
                 statement.executeUpdate();
 
@@ -40,6 +41,9 @@ public class CategoryDao extends AbstractDao<Category>{
     public List<Category> listAll() throws SQLException {
         return super.listAll("select * from category");
     }
+    public List<Category> listAllWithParameter(int id) throws SQLException {
+        return super.listAllWithParameter("select * from category where questionnaire_id = (?)", id);
+    }
 
     @Override
     protected Category mapFromResultSet(ResultSet rs) throws SQLException {
@@ -47,6 +51,7 @@ public class CategoryDao extends AbstractDao<Category>{
         category.setCategoryId(rs.getInt("category_id"));
         category.setCategoryTitle(rs.getString("category_title"));
         category.setCategoryText(rs.getString("category_text"));
+        category.setQuestionnaireId(rs.getInt("questionnaire_id"));
         return category;
     }
 

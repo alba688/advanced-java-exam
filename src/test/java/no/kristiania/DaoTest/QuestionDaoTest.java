@@ -2,9 +2,11 @@ package no.kristiania.DaoTest;
 
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.CategoryDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
 
+import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -15,16 +17,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QuestionDaoTest {
     private QuestionDao dao = new QuestionDao(TestData.testDataSource());
     private CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+    private QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+    Questionnaire questionnaire = new Questionnaire();
 
     @Test
     void shouldSaveAndRetrieveQuestionFromDatabase() throws SQLException {
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaireDao.save(questionnaire);
+
         Category category = new Category();
         category.setCategoryId(1);
         category.setCategoryTitle("Title");
         category.setCategoryText("Text");
+        category.setQuestionnaireId(1);
         categoryDao.save(category);
 
-        Question question = exampleQuestion();
+        Question question = TestData.exampleQuestion();
 
         dao.save(question);
 
@@ -35,15 +44,16 @@ public class QuestionDaoTest {
 
     @Test
     void shouldListAllQuestions() throws SQLException {
-        Category category = new Category();
-        category.setCategoryId(1);
-        category.setCategoryTitle("Title");
-        category.setCategoryText("Text");
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("title");
+        questionnaireDao.save(questionnaire);
+
+        Category category = TestData.exampleCategory();
         categoryDao.save(category);
 
-        Question question = exampleQuestion();
+        Question question = TestData.exampleQuestion();
         dao.save(question);
-        Question anotherQuestion = exampleQuestion();
+        Question anotherQuestion = TestData.exampleQuestion();
         dao.save(anotherQuestion);
 
         assertThat(dao.listAll())
@@ -53,7 +63,10 @@ public class QuestionDaoTest {
 
     @Test
     void shouldEditASpecificQuestion() throws SQLException {
-        Question question = exampleQuestion();
+        Category category = TestData.exampleCategory();
+
+
+        Question question = TestData.exampleQuestion();
         dao.save(question);
 
         Question fixedQuestion = new Question();
@@ -71,16 +84,17 @@ public class QuestionDaoTest {
 
     @Test
     void shouldDeleteASpecificQuestion() throws SQLException {
-        Category category = new Category();
-        category.setCategoryId(1);
-        category.setCategoryTitle("Title");
-        category.setCategoryText("Text");
+
+        questionnaire.setQuestionnaireTitle("title");
+        questionnaireDao.save(questionnaire);
+
+        Category category = TestData.exampleCategory();
         categoryDao.save(category);
 
-        Question questionToDelete = exampleQuestion();
+        Question questionToDelete = TestData.exampleQuestion();
         dao.save(questionToDelete);
 
-        Question questionToSave = exampleQuestion();
+        Question questionToSave = TestData.exampleQuestion();
         dao.save(questionToSave);
 
         dao.delete(questionToDelete.getQuestionId());
@@ -92,14 +106,6 @@ public class QuestionDaoTest {
 
     }
 
-    private Question exampleQuestion() {
-        Question question = new Question();
-        question.setQuestionTitle(TestData.pickOne("Coffee or tea?", "Apple or Banana?", "Pizza or Hamburger?", "Black or White?"));
-        question.setLowLabel(TestData.pickOne("No", "None", "Negative"));
-        question.setHighLabel(TestData.pickOne("Yes", "Good", "Amazing"));
-        question.setNumberOfValues(new Random().nextInt(10));
-        question.setCategoryId(1);
-        return question;
-    }
+
 
 }
