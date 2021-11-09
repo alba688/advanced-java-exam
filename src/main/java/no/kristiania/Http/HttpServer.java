@@ -174,8 +174,8 @@ public class HttpServer {
                                 "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
 
                         int j = 0;
-                        for (int i = 1; i < question.getNumberOfValues(); i++) {
-                            responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
+                        for (int i = 0; i < question.getNumberOfValues(); i++) {
+                            responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i+1 +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
                         }
                         j++;
                         responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
