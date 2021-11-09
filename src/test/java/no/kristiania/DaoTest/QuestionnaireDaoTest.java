@@ -28,6 +28,14 @@ public class QuestionnaireDaoTest {
 
     @Test
     void shouldListAllQuestions() throws SQLException {
+        Questionnaire questionnaire = exampleQuestionnaire();
+        dao.save(questionnaire);
+        Questionnaire anotherQuestionnaire = exampleQuestionnaire();
+        dao.save(anotherQuestionnaire);
+
+        assertThat(dao.listAll())
+                .extracting(Questionnaire::getQuestionnaireId)
+                .contains(questionnaire.getQuestionnaireId(), anotherQuestionnaire.getQuestionnaireId());
 
 
 
