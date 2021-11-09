@@ -35,8 +35,8 @@ public class QuestionnaireDao extends AbstractDao <Questionnaire> {
         return super.retrieve("select * from questionnaire where questionnaire_id = (?)", id);
     }
 
-    public List<Questionnaire> listAll() {
-        return null;
+    public List<Questionnaire> listAll() throws SQLException {
+        return super.listAll("select * from questionnaire");
     }
 
     @Override

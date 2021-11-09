@@ -36,9 +36,6 @@ public class QuestionnaireDaoTest {
         assertThat(dao.listAll())
                 .extracting(Questionnaire::getQuestionnaireId)
                 .contains(questionnaire.getQuestionnaireId(), anotherQuestionnaire.getQuestionnaireId());
-
-
-
     }
 
 
