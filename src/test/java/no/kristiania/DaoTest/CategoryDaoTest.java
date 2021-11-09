@@ -20,7 +20,7 @@ public class CategoryDaoTest {
         Category category = exampleCategory();
         dao.save(category);
 
-        assertThat(dao.retrieve(category.getCategory_id()))
+        assertThat(dao.retrieve(category.getCategoryId()))
                 .usingRecursiveComparison()
                 .isEqualTo(category);
     }
@@ -33,8 +33,8 @@ public class CategoryDaoTest {
         dao.save(anotherCategory);
 
         assertThat(dao.listAll())
-                .extracting(Category::getCategory_id)
-                .contains(category.getCategory_id(), anotherCategory.getCategory_id());
+                .extracting(Category::getCategoryId)
+                .contains(category.getCategoryId(), anotherCategory.getCategoryId());
 
 
     }

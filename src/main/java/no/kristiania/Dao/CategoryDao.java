@@ -27,7 +27,7 @@ public class CategoryDao extends AbstractDao<Category>{
 
                 try (ResultSet rs = statement.getGeneratedKeys()) {
                     rs.next();
-                    category.setCategory_id(rs.getInt("category_id"));
+                    category.setCategoryId(rs.getInt("category_id"));
                 }
             }
         }
@@ -44,7 +44,7 @@ public class CategoryDao extends AbstractDao<Category>{
     @Override
     protected Category mapFromResultSet(ResultSet rs) throws SQLException {
         Category category = new Category();
-        category.setCategory_id(rs.getInt("category_id"));
+        category.setCategoryId(rs.getInt("category_id"));
         category.setCategoryTitle(rs.getString("category_title"));
         category.setCategoryText(rs.getString("category_text"));
         return category;

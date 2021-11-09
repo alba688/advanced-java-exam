@@ -100,7 +100,7 @@ public class HttpServerTest {
     void shouldCreateNewQuestion() throws IOException, SQLException {
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
         Category category = new Category();
-        category.setCategory_id(1);
+        category.setCategoryId(1);
         category.setCategoryTitle("Title");
         category.setCategoryText("Text");
         categoryDao.save(category);
@@ -129,7 +129,7 @@ public class HttpServerTest {
                 "localhost",
                 server.getPort(),
                 "/api/newCategory",
-                "title=categoryTitle&text=categoryText"
+                "questionnaire=1&title=categoryTitle&text=categoryText"
         );
         assertEquals(200, postClient.getStatusCode());
 
@@ -207,7 +207,7 @@ public class HttpServerTest {
         server.setQuestionDao(questionDao);
         Category category = new Category();
         category.setCategoryTitle("Chosen questionnaire");
-        category.setCategory_id(1);
+        category.setCategoryId(1);
         categoryDao.save(category);
 
         Question question = new Question();
@@ -215,7 +215,7 @@ public class HttpServerTest {
         question.setLowLabel("Low");
         question.setHighLabel("High");
         question.setNumberOfValues(5);
-        question.setCategoryId(category.getCategory_id());
+        question.setCategoryId(category.getCategoryId());
 
         questionDao.save(question);
 

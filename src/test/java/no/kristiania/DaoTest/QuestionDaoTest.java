@@ -19,7 +19,7 @@ public class QuestionDaoTest {
     @Test
     void shouldSaveAndRetrieveQuestionFromDatabase() throws SQLException {
         Category category = new Category();
-        category.setCategory_id(1);
+        category.setCategoryId(1);
         category.setCategoryTitle("Title");
         category.setCategoryText("Text");
         categoryDao.save(category);
@@ -36,7 +36,7 @@ public class QuestionDaoTest {
     @Test
     void shouldListAllQuestions() throws SQLException {
         Category category = new Category();
-        category.setCategory_id(1);
+        category.setCategoryId(1);
         category.setCategoryTitle("Title");
         category.setCategoryText("Text");
         categoryDao.save(category);
@@ -72,7 +72,7 @@ public class QuestionDaoTest {
     @Test
     void shouldDeleteASpecificQuestion() throws SQLException {
         Category category = new Category();
-        category.setCategory_id(1);
+        category.setCategoryId(1);
         category.setCategoryTitle("Title");
         category.setCategoryText("Text");
         categoryDao.save(category);

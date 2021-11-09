@@ -7,6 +7,7 @@ import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
+import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -163,7 +164,7 @@ public class HttpServer {
 
                 responseTxt = "<h1>" + category.getCategoryTitle() + "</h1>";
                 int j = 0;
-                for (Question question : questionDao.listAllWithParameter(category.getCategory_id())) {
+                for (Question question : questionDao.listAllWithParameter(category.getCategoryId())) {
                     responseTxt += "<p>" + question.getQuestionTitle() +
                             "</p>" +
                             "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
@@ -206,7 +207,7 @@ public class HttpServer {
             } else if (fileTarget.equals("/api/listCategories")) {
                 String responseText = "";
                 for (Category category : categoryDao.listAll()) {
-                    responseText += "<option value=\""+ category.getCategory_id() +"\">"+ category.getCategoryTitle() +"</option>";
+                    responseText += "<option value=\""+ category.getCategoryId() +"\">"+ category.getCategoryTitle() +"</option>";
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
@@ -229,10 +230,20 @@ public class HttpServer {
             else if (fileTarget.equals("/api/newCategory")){
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Category category = new Category();
+                int questionnaireID = Integer.parseInt(queryMap.get("questionnaire"));
+                category.setQuestionnaireId(questionnaireID);
                 category.setCategoryTitle(queryMap.get("title"));
                 category.setCategoryText(queryMap.get("text"));
                 categoryDao.save(category);
                 write200OKResponse("Category created", "text/plain", clientSocket);
+
+            } else if (fileTarget.equals("api/newQuestionnaire")) {
+                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
+                Questionnaire questionnaire = new Questionnaire();
+                questionnaire.setQuestionnaireTitle(queryMap.get("title"));
+                questionnaire.setQuestionnaireText(queryMap.get("text"));
+                questionnaireDao.save(questionnaire);
+                write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
             } else {
                 String responseText = "File not found: " + requestTarget;
