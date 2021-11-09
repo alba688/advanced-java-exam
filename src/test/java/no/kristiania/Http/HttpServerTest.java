@@ -3,8 +3,10 @@ package no.kristiania.Http;
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
+import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
+import org.checkerframework.checker.units.qual.A;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -204,6 +206,26 @@ public class HttpServerTest {
 
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
         assertEquals("<h1>Chosen questionnaire</h1><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
+
+    }
+
+    @Test
+    void shouldCreateAnswer() throws IOException {
+
+        Answer answer = new Answer();
+
+        answer.setAnswerValue(1);
+        answer.setQuestionId(1);
+
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/answerQuestionnaire",
+                "value=1&name=1"
+        );
+        assertEquals(200, postClient.getStatusCode());
+
+
 
     }
 }

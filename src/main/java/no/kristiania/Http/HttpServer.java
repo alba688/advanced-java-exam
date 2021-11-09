@@ -2,6 +2,7 @@ package no.kristiania.Http;
 
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
@@ -113,7 +114,7 @@ public class HttpServer {
                 }
                 write200OKResponse(responseText, "text/html", clientSocket);
 
-            } else if (fileTarget.equals("/api/showQuestionnaireQuestions")){
+            } else if (fileTarget.equals("/api/showQuestionnaireQuestions")) {
                 String responseTxt = "";
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
 
@@ -121,21 +122,23 @@ public class HttpServer {
 
                 responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
 
-                    for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
-                        responseTxt += "<p>" + question.getQuestionTitle() +
-                                "</p>" +
-                                "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() +"</label>";
+                for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
+                    responseTxt += "<p>" + question.getQuestionTitle() +
+                            "</p>" +
+                            "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
 
 
-                        for (int i = 0; i < question.getNumberOfValues(); i++){
-                            responseTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
-                        }
-                        responseTxt +="<label>" + question.getHighLabel() + "</label><br>";
-
+                    for (int i = 0; i < question.getNumberOfValues(); i++) {
+                        responseTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
                     }
+                    responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
+
+                }
                 responseTxt += "<button value=\"Send\">Send</button></form>";
                 write200OKResponse(responseTxt, "text/html", clientSocket);
 
+
+            } else if (fileTarget.equals("/api/answerQuestionnaire")) {
 
 
 
