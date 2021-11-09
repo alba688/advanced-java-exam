@@ -16,9 +16,6 @@ public class QuestionDaoTest {
     private QuestionDao dao = new QuestionDao(TestData.testDataSource());
     private QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
 
-
-
-
     @Test
     void shouldSaveAndRetrieveQuestionFromDatabase() throws SQLException {
         Questionnaire questionnaire = new Questionnaire();
@@ -74,6 +71,12 @@ public class QuestionDaoTest {
 
     @Test
     void shouldDeleteASpecificQuestion() throws SQLException {
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaire_id(1);
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaire.setQuestionnaireText("Text");
+        questionnaireDao.save(questionnaire);
+
         Question questionToDelete = exampleQuestion();
         dao.save(questionToDelete);
 
