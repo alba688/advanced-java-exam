@@ -1,8 +1,7 @@
 package no.kristiania.DaoTest;
 
-import no.kristiania.Dao.CategoryDao;
+
 import no.kristiania.Dao.QuestionnaireDao;
-import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Questionnaire;
 import org.junit.jupiter.api.Test;
 

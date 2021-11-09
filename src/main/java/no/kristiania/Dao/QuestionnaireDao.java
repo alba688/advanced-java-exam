@@ -1,7 +1,5 @@
 package no.kristiania.Dao;
-
 import no.kristiania.Objects.Questionnaire;
-
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;

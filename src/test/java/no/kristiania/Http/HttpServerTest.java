@@ -3,10 +3,12 @@ package no.kristiania.Http;
 import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.CategoryDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
 import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
+import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -109,35 +111,50 @@ public class HttpServerTest {
                 "localhost",
                 server.getPort(),
                 "/api/newQuestion",
-                "questionnaires=1&title=What+is+your+name%3F&values=5"
+                "categories=1&title=What+is+your+name%3F&values=5"
         );
         assertEquals(200, postClient.getStatusCode());
         Question question = server.getQuestionDao().retrieve(1);
-        assertEquals(1 ,question.getQuestionnaireId());
+        assertEquals(1 ,question.getCategoryId());
         assertEquals("What is your name?", question.getQuestionTitle());
 
     }
 
     @Test
-    void shouldCreateNewQuestionnaire() throws IOException, SQLException {
+    void shouldCreateNewCategory() throws IOException, SQLException {
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
-        server.setQuestionnaireDao(categoryDao);
+        server.setCategoryDao(categoryDao);
 
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
-                "/api/newQuestionnaire",
-                "title=questionnaireTitle&text=questionnaireText"
+                "/api/newCategory",
+                "title=categoryTitle&text=categoryText"
         );
         assertEquals(200, postClient.getStatusCode());
 
         Category category = categoryDao.retrieve(1);
-        assertEquals("questionnaireTitle", category.getCategoryTitle());
-        assertEquals("questionnaireText", category.getCategoryText());
+        assertEquals("categoryTitle", category.getCategoryTitle());
+        assertEquals("categoryText", category.getCategoryText());
     }
 
     @Test
-    void shouldShowQuestionOptions() throws IOException, SQLException {
+    void shouldCreateNewQuestionnaire() throws SQLException, IOException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        server.setQuestionnaireDao(questionnaireDao);
+
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost", server.getPort(), "api/newQuestionnaire", "title=questionnaireTitle&text=questionnaireText"
+        );
+        assertEquals(200, postClient.getStatusCode());
+
+        Questionnaire questionnaire = questionnaireDao.retrieve(1);
+        assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
+        assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
+    }
+
+    @Test
+    void shouldShowQuestionCategories() throws IOException, SQLException {
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
         Category firstCategory = new Category();
         firstCategory.setCategoryTitle("Matvaner");
@@ -147,12 +164,12 @@ public class HttpServerTest {
         categoryDao.save(secondCategory);
 
 
-        server.setQuestionnaireDao(categoryDao);
+        server.setCategoryDao(categoryDao);
 
         HttpClient client = new HttpClient(
                 "localhost",
                 server.getPort(),
-                "/api/listQuestionnaires");
+                "/api/listCategories");
         assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
                 client.getMessageBody());
     }
@@ -175,7 +192,7 @@ public class HttpServerTest {
         question.setLowLabel("Not at all");
         question.setHighLabel("Love it");
         question.setNumberOfValues(5);
-        question.setQuestionnaireId(1);
+        question.setCategoryId(1);
         server.getQuestionDao().save(question);
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
         assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>Love it</label></form>", client.getMessageBody());
@@ -183,10 +200,10 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldShowQuestionsWithSpesificQuestionnaire() throws IOException, SQLException {
+    void shouldShowQuestionsWithSpesificCategory() throws IOException, SQLException {
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
-        server.setQuestionnaireDao(categoryDao);
+        server.setCategoryDao(categoryDao);
         server.setQuestionDao(questionDao);
         Category category = new Category();
         category.setCategoryTitle("Chosen questionnaire");
@@ -198,7 +215,7 @@ public class HttpServerTest {
         question.setLowLabel("Low");
         question.setHighLabel("High");
         question.setNumberOfValues(5);
-        question.setQuestionnaireId(category.getCategory_id());
+        question.setCategoryId(category.getCategory_id());
 
         questionDao.save(question);
 
@@ -217,13 +234,13 @@ public class HttpServerTest {
         Category category = new Category();
         category.setCategoryTitle("Chosen questionnaire");
 
-        server.setQuestionnaireDao(categoryDao);
+        server.setCategoryDao(categoryDao);
         categoryDao.save(category);
 
         Question question = new Question();
         question.setQuestionTitle("Question Title");
         question.setNumberOfValues(10);
-        question.setQuestionnaireId(1);
+        question.setCategoryId(1);
         server.setQuestionDao(questionDao);
         questionDao.save(question);
 

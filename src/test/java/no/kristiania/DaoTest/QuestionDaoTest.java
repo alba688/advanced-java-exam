@@ -62,7 +62,7 @@ public class QuestionDaoTest {
         fixedQuestion.setLowLabel("Low test");
         fixedQuestion.setHighLabel("High test");
         fixedQuestion.setNumberOfValues(2);
-        fixedQuestion.setQuestionnaireId(1);
+        fixedQuestion.setCategoryId(1);
         dao.edit(fixedQuestion);
 
         assertThat(dao.retrieve(question.getQuestionId()))
@@ -98,7 +98,7 @@ public class QuestionDaoTest {
         question.setLowLabel(TestData.pickOne("No", "None", "Negative"));
         question.setHighLabel(TestData.pickOne("Yes", "Good", "Amazing"));
         question.setNumberOfValues(new Random().nextInt(10));
-        question.setQuestionnaireId(1);
+        question.setCategoryId(1);
         return question;
     }
 

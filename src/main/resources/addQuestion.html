@@ -8,7 +8,7 @@
 <body>
 <h1>Add question to category</h1>
 <form method="POST" action="/api/newQuestion">
-    <label>Questionnaire: <select id="questionnaires" name="questionnaires" ></select></label><br>
+    <label>Category: <select id="categories" name="categories" ></select></label><br>
     <label>Question Title: <input type="text" name="title"/></label><br>
     <label>Label for lowest value <input type="text" name="low_label" /></label><br>
     <label>Label for highest value <input type="text" name="high_label" /></label><br>
@@ -20,7 +20,7 @@
 </div>
 </body>
 <script>
-    fetch("/api/listQuestionnaires")
+    fetch("/api/listCategories")
         .then(function(response) {
             return response.text();
         }).then(function(text) {

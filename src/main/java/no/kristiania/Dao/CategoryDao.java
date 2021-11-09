@@ -49,4 +49,6 @@ public class CategoryDao extends AbstractDao<Category>{
         category.setCategoryText(rs.getString("category_text"));
         return category;
     }
+
+
 }

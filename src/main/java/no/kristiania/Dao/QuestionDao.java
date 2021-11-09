@@ -23,7 +23,7 @@ public class QuestionDao extends AbstractDao<Question> {
                 statement.setString(2, question.getLowLabel());
                 statement.setString(3, question.getHighLabel());
                 statement.setInt(4, question.getNumberOfValues());
-                statement.setInt(5, question.getQuestionnaireId());
+                statement.setInt(5, question.getCategoryId());
 
                 statement.executeUpdate();
 
@@ -68,7 +68,7 @@ public class QuestionDao extends AbstractDao<Question> {
         question.setLowLabel(rs.getString("low_label"));
         question.setHighLabel(rs.getString("high_label"));
         question.setNumberOfValues(rs.getInt("number_of_values"));
-        question.setQuestionnaireId(rs.getInt("category_id"));
+        question.setCategoryId(rs.getInt("category_id"));
         return question;
     }
 }

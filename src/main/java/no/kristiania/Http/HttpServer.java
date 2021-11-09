@@ -3,6 +3,7 @@ package no.kristiania.Http;
 import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
 import no.kristiania.Dao.CategoryDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Category;
 import no.kristiania.Objects.Question;
@@ -28,6 +29,7 @@ public class HttpServer {
     private QuestionDao questionDao;
     private CategoryDao categoryDao;
     private AnswerDao answerDao;
+    private QuestionnaireDao questionnaireDao;
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -201,7 +203,7 @@ public class HttpServer {
 
 
 
-            } else if (fileTarget.equals("/api/listQuestionnaires")) {
+            } else if (fileTarget.equals("/api/listCategories")) {
                 String responseText = "";
                 for (Category category : categoryDao.listAll()) {
                     responseText += "<option value=\""+ category.getCategory_id() +"\">"+ category.getCategoryTitle() +"</option>";
@@ -212,8 +214,8 @@ public class HttpServer {
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Question question = new Question();
 
-                int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
-                question.setQuestionnaireId(questionnaireID);
+                int categoryId = Integer.parseInt(queryMap.get("categories"));
+                question.setCategoryId(categoryId);
                 question.setQuestionTitle(queryMap.get("title"));
                 question.setLowLabel(queryMap.get("low_label"));
                 question.setHighLabel(queryMap.get("high_label"));
@@ -224,13 +226,13 @@ public class HttpServer {
                 write200OKResponse("Question added", "text/plain", clientSocket);
 
             }
-            else if (fileTarget.equals("/api/newQuestionnaire")){
+            else if (fileTarget.equals("/api/newCategory")){
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
                 Category category = new Category();
                 category.setCategoryTitle(queryMap.get("title"));
                 category.setCategoryText(queryMap.get("text"));
                 categoryDao.save(category);
-                write200OKResponse("Questionnaire created", "text/plain", clientSocket);
+                write200OKResponse("Category created", "text/plain", clientSocket);
 
             } else {
                 String responseText = "File not found: " + requestTarget;
@@ -276,16 +278,8 @@ public class HttpServer {
         return serverSocket.getLocalPort();
     }
 
-    public CategoryDao getQuestionnaireDao() {
-        return categoryDao;
-    }
-
-    public void setQuestionnaireDao(CategoryDao questionnairedao) {
-        this.categoryDao = questionnairedao;
-    }
-
-    public AnswerDao getAnswerDao() {
-        return answerDao;
+    public void setCategoryDao(CategoryDao categoryDao) {
+        this.categoryDao = categoryDao;
     }
 
     public void setAnswerDao(AnswerDao answerDao) {
@@ -298,6 +292,10 @@ public class HttpServer {
 
     public void setQuestionDao(QuestionDao questionDao) {
         this.questionDao = questionDao;
+    }
+
+    public void setQuestionnaireDao(QuestionnaireDao questionnaireDao) {
+        this.questionnaireDao = questionnaireDao;
     }
 
     private static DataSource createDataSource() throws IOException {
@@ -316,7 +314,7 @@ public class HttpServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
         server.setContentRoot(Paths.get("src/main/resources"));
-        server.setQuestionnaireDao(new CategoryDao(createDataSource()));
+        server.setCategoryDao(new CategoryDao(createDataSource()));
         server.setQuestionDao(new QuestionDao(createDataSource()));
         server.setAnswerDao(new AnswerDao(createDataSource()));
 
