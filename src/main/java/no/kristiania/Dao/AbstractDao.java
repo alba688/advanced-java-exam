@@ -63,4 +63,18 @@ public abstract class AbstractDao<T> {
         }
     }
 
+    protected void edit(String sql, Question editedQuestion) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, editedQuestion.getQuestionTitle());
+                statement.setString(2, editedQuestion.getLowLabel());
+                statement.setString(3, editedQuestion.getHighLabel());
+                statement.setInt(4, editedQuestion.getNumberOfValues());
+                statement.setInt(5, editedQuestion.getQuestionId());
+
+                statement.executeUpdate();
+            }
+        }
+    }
+
 }
