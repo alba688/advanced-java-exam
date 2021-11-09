@@ -59,7 +59,7 @@ public class HttpServer {
 
         String response;
 
-        // Handle queries inside of request target
+
         int questionPos = requestTarget.indexOf('?');
         String fileTarget;
         String query = null;
@@ -71,7 +71,6 @@ public class HttpServer {
             fileTarget = requestTarget;
         }
 
-        // tests specific request target
         if (fileTarget.equals("/hello")) {
             String yourName = "world";
 
@@ -120,34 +119,24 @@ public class HttpServer {
 
                 Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
-
                 responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
 
-                ArrayList <Question> listOfQuestions = new ArrayList<>();
+                    for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
+                        responseTxt += "<p>" + question.getQuestionTitle() +
+                                "</p>" +
+                                "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() +"</label>";
 
-                    for (Question question : questionDao.listAll()) {
-                        if ((question.getQuestionnaireId() == Integer.parseInt(queryMap.get("questionnaires")))) {
-                            listOfQuestions.add(question);
+
+                        for (int i = 0; i < question.getNumberOfValues(); i++){
+                            responseTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
                         }
+                        responseTxt +="<label>" + question.getHighLabel() + "</label><br>";
+
                     }
-
-                String questionTxt = "";
-
-                for (Question question : listOfQuestions){
-                     questionTxt += "<p>" + question.getQuestionTitle() +
-                            "</p>" +
-                            "<form method=\"\" action=\"\"><label>" + question.getLowLabel() +"</label>";
-
-
-                    for (int i = 0; i < question.getNumberOfValues(); i++){
-                        questionTxt += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
-                    }
-                    questionTxt +="<label>" + question.getHighLabel() + "</label>" +
-                            "</form>";
-
-                }
-                    responseTxt += questionTxt;
+                responseTxt += "<button value=\"Send\">Send</button></form>";
                 write200OKResponse(responseTxt, "text/html", clientSocket);
+
+
 
 
 

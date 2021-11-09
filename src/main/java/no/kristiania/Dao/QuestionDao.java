@@ -40,9 +40,17 @@ public class QuestionDao extends AbstractDao<Question> {
         return super.retrieve("select * from question where question_id = ?", questionId);
     }
 
+
+    public List<Question> listAllWithParameter(int id) throws SQLException {
+        return super.listAllWithParameter("select * from question where questionnaire_id = ?", id);
+    }
+
+
     public List<Question> listAll() throws SQLException {
         return super.listAll("select * from question");
     }
+
+
 
     @Override
     protected Question mapFromResultSet(ResultSet rs) throws SQLException {
