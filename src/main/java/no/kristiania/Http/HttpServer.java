@@ -1,7 +1,8 @@
 package no.kristiania.Http;
 
+import no.kristiania.Controller.HttpController;
 import no.kristiania.Dao.AnswerDao;
-import no.kristiania.Dao.QuestionDao;
+import no.kristiania.Dao.QuestionDao; //eventually remove after Controller in place
 import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
@@ -10,24 +11,26 @@ import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
+import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Path; // eventually remove after Controller in place
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
 
+
 public class HttpServer {
     private ServerSocket serverSocket;
-    private Path contentRoot;
-    private QuestionDao questionDao;
-    private QuestionnaireDao questionnaireDao;
-    private AnswerDao answerDao;
+    // private Path contentRoot; // eventually remove after Controller in place
+    //private QuestionDao questionDao; // eventually remove after Controller in place
+    //private QuestionnaireDao questionnaireDao;
+    //private AnswerDao answerDao;
+    private HashMap<String, HttpController> controllers = new HashMap<>();
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -56,12 +59,9 @@ public class HttpServer {
         String[] requestLine = httpReader.statusLine.split(" ");
         String requestTarget = requestLine[1];
 
-        if(requestTarget.equals("/")) {
-            requestTarget = "/index.html";
-        }
-
-        String response;
-
+            if(requestTarget.equals("/")) {
+                requestTarget = "/index.html";
+            }
 
         int questionPos = requestTarget.indexOf('?');
         String fileTarget;
@@ -74,21 +74,30 @@ public class HttpServer {
             fileTarget = requestTarget;
         }
 
+        if (controllers.containsKey(fileTarget)) {
+            HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
+            readerResponse.write(clientSocket);
+            return;
+        }
+
         if (fileTarget.equals("/hello")) {
             String yourName = "world";
 
             if (query != null) {
-                Map<String, String> queryMap = parseRequestParameters(query);
+                Map<String, String> queryMap = HttpReader.parseRequestParameters(query);
                 yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
             }
         String responseText = "Hello " +yourName;
         write200OKResponse(responseText, "text/plain", clientSocket);
 
         } else {
-            if(contentRoot !=  null && Files.exists(contentRoot.resolve(fileTarget.substring(1)))) {
-                String responseText = Files.readString(contentRoot.resolve(fileTarget.substring(1)));
-                String contentType;
+            InputStream fileResource = getClass().getResourceAsStream(fileTarget);
+            if(fileResource !=  null) {
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                fileResource.transferTo(buffer);
+                String responseText = buffer.toString();
 
+                String contentType;
                 if (requestTarget.endsWith(".html")) {
                     contentType = "text/html";
                 } else if (requestTarget.endsWith(".css")) {
@@ -97,164 +106,19 @@ public class HttpServer {
                     contentType = "text/plain";
                 }
                 write200OKResponse(responseText, contentType, clientSocket);
-
-            } else if (fileTarget.equals("/api/questions")) {
-                String responseText = "";
-                for (Question question : questionDao.listAll()) {
-
-                    responseText +=
-                            "<p>" + question.getQuestionTitle() +
-                            "</p>" +
-                            "<form method=\"\" action=\"\"><label>" + question.getLowLabel() +"</label>";
-
-                            for (int i=0; i < question.getNumberOfValues(); i++){
-                                responseText += "<input value=\"" + i + "\"" + "type=\"radio\" name=\"question" + question.getQuestionId() + "_answer\"></input>";
-                            }
-
-                    responseText +="<label>" + question.getHighLabel() + "</label>" +
-                                    "</form>";
-                }
-                write200OKResponse(responseText, "text/html", clientSocket);
-
-
-            } else if (fileTarget.equals("/api/listQuestions")) {
-                String responseText = "";
-
-                for (Question question : questionDao.listAll()) {
-                    responseText += "<option value=\""+ question.getQuestionId() +"\">"+ question.getQuestionTitle() +"</option>";
-                }
-                write200OKResponse(responseText, "text/html", clientSocket);
-
-            }  else if (fileTarget.equals("/api/deleteQuestion")){
-
-                // retrieves question to be deleted
-                Question question = questionDao.retrieve(Integer.parseInt((parseRequestParameters(httpReader.messageBody)).get("questions")));
-
-                questionDao.delete(question.getQuestionId());
-
-                write200OKResponse("Question deleted", "text/plain", clientSocket);
-
-            } else if (fileTarget.equals("/api/editQuestion")){
-
-                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-
-                // retrieves the questionId to be edited
-                Question question = questionDao.retrieve(Integer.parseInt(queryMap.get("questions")));
-
-                // updates data using setters
-                question.setQuestionTitle(queryMap.get("title"));
-                question.setLowLabel(queryMap.get("low_label"));
-                question.setHighLabel(queryMap.get("high_label"));
-                int numberOfValues = Integer.parseInt(queryMap.get("values"));
-                question.setNumberOfValues(numberOfValues);
-
-                // sends updated question to edit method to deploy sql statement
-                questionDao.edit(question);
-
-                write200OKResponse("Edit complete", "text/plain", clientSocket);
-
-            } else if (fileTarget.equals("/api/showQuestionnaireQuestions")){
-                String responseTxt = "";
-                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-
-                Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
-
-                responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1>";
-                int j = 0;
-                for (Question question : questionDao.listAllWithParameter(questionnaire.getQuestionnaire_id())) {
-                    responseTxt += "<p>" + question.getQuestionTitle() +
-                            "</p>" +
-                            "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
-
-
-                    for (int i = 1; i < question.getNumberOfValues(); i++) {
-                        responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
-                    }
-                    j++;
-                    responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
-
-                    }
-
-                responseTxt += "<button value=\"Send\">Send</button></form>";
-                write200OKResponse(responseTxt, "text/html", clientSocket);
-
-
-
-            } else if (fileTarget.equals("/api/answerQuestionnaire")) {
-                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-                Answer answer = new Answer();
-
-                for (int i = 0; i < queryMap.size(); i++) {
-                    if(queryMap.get("question"+i) != null) {
-                        String buffer = queryMap.get("question" + i);
-                        int valuePos = buffer.indexOf('v');
-                        int questionId = Integer.parseInt(buffer.substring(0, valuePos));
-                        int answerValue = Integer.parseInt(buffer.substring(valuePos+1));
-
-                        answer.setQuestionId(questionId);
-                        answer.setAnswerValue(answerValue);
-
-                        answerDao.save(answer);
-                    }
-                }
-                write200OKResponse("Thank You", "text/plain", clientSocket);
-
-
-
-            } else if (fileTarget.equals("/api/listQuestionnaires")) {
-                String responseText = "";
-                for (Questionnaire questionnaire : questionnaireDao.listAll()) {
-                    responseText += "<option value=\""+ questionnaire.getQuestionnaire_id() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
-                }
-                write200OKResponse(responseText, "text/html", clientSocket);
-
-            } else if (fileTarget.equals("/api/newQuestion")) {
-                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-                Question question = new Question();
-
-                int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
-                question.setQuestionnaireId(questionnaireID);
-                question.setQuestionTitle(queryMap.get("title"));
-                question.setLowLabel(queryMap.get("low_label"));
-                question.setHighLabel(queryMap.get("high_label"));
-                int numberOfValues = Integer.parseInt(queryMap.get("values"));
-                question.setNumberOfValues(numberOfValues);
-
-                questionDao.save(question);
-                write200OKResponse("Question added", "text/plain", clientSocket);
-
+                return;
             }
-            else if (fileTarget.equals("/api/newQuestionnaire")){
-                Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
-                Questionnaire questionnaire = new Questionnaire();
-                questionnaire.setQuestionnaireTitle(queryMap.get("title"));
-                questionnaire.setQuestionnaireText(queryMap.get("text"));
-                questionnaireDao.save(questionnaire);
-                write200OKResponse("Questionnaire created", "text/plain", clientSocket);
 
-            } else {
-                String responseText = "File not found: " + requestTarget;
-                response = "HTTP/1.1 404 File not found\r\n" +
+            String responseText = "File not found: " + requestTarget;
+
+            String response = "HTTP/1.1 404 File not found\r\n" +
                             "Content-Length: " + responseText.getBytes().length + "\r\n" +
                             "Content-Type: text/plain\r\n" +
                             "Connection: close\r\n" +
                             "\r\n" +
                             responseText;
-                clientSocket.getOutputStream().write(response.getBytes());
-            }
+            clientSocket.getOutputStream().write(response.getBytes());
         }
-    }
-
-    private Map<String, String> parseRequestParameters(String query) {
-        Map<String, String> queryMap = new HashMap<>();
-        for (String queryParameter : query.split("&")) {
-            int equalPos = queryParameter.indexOf("=");
-            String parameterName  = queryParameter.substring(0, equalPos);
-            String parameterValue = URLDecoder.decode(queryParameter.substring(equalPos+1), StandardCharsets.UTF_8);
-            queryMap.put(parameterName,parameterValue);
-        }
-        return queryMap;
-
     }
 
     private void write200OKResponse(String responseText, String contentType, Socket clientSocket) throws IOException {
@@ -265,39 +129,10 @@ public class HttpServer {
                 "\r\n" +
                 responseText;
         clientSocket.getOutputStream().write(response.getBytes());
-
-    }
-
-    public void setContentRoot(Path contentRoot) {
-        this.contentRoot = contentRoot;
     }
 
     public int getPort() {
         return serverSocket.getLocalPort();
-    }
-
-    public QuestionnaireDao getQuestionnaireDao() {
-        return questionnaireDao;
-    }
-
-    public void setQuestionnaireDao(QuestionnaireDao questionnairedao) {
-        this.questionnaireDao = questionnairedao;
-    }
-
-    public AnswerDao getAnswerDao() {
-        return answerDao;
-    }
-
-    public void setAnswerDao(AnswerDao answerDao) {
-        this.answerDao = answerDao;
-    }
-
-    public QuestionDao getQuestionDao() {
-        return questionDao;
-    }
-
-    public void setQuestionDao(QuestionDao questionDao) {
-        this.questionDao = questionDao;
     }
 
     private static DataSource createDataSource() throws IOException {
@@ -313,13 +148,15 @@ public class HttpServer {
         return dataSource;
     }
 
+    public void addController(String path, HttpController controller) {
+        controllers.put(path, controller);
+    }
+
     public static void main(String[] args) throws IOException {
         HttpServer server = new HttpServer(10001);
-        server.setContentRoot(Paths.get("src/main/resources"));
-        server.setQuestionnaireDao(new QuestionnaireDao(createDataSource()));
-        server.setQuestionDao(new QuestionDao(createDataSource()));
-        server.setAnswerDao(new AnswerDao(createDataSource()));
-
+        new QuestionDao(createDataSource());
+        new QuestionnaireDao(createDataSource());
+        new AnswerDao(createDataSource());
     }
 
 
