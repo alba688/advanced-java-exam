@@ -244,7 +244,13 @@ public class HttpServerTest {
         server.setCategoryDao(categoryDao);
         server.setQuestionDao(questionDao);
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaire", "questionnaires=1");
-        assertEquals("<h1>title</h1><p>text</p><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
+        assertEquals("<!DOCTYPE html><html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Show category | Kristiania Questionnaire</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                "</head>\n" +
+                "<body><div class=\"questionnaire\"><h1>title</h1><p>text</p></div><form method=\"POST\" action=\"/api/answerQuestionnaire\"><div class=\"category\"><h2>Chosen questionnaire</h2><p>null</p><h3>Question Title</h3><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><input value=\"1v5\"type=\"radio\" name=\"question0\"></input><label>High</label><br></div><button value=\"Send\">Send</button></form></body></html>", postClient.getMessageBody());
 
     }
 

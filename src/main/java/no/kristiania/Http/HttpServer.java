@@ -157,34 +157,41 @@ public class HttpServer {
                 write200OKResponse("Edit complete", "text/plain", clientSocket);
 
             } else if (fileTarget.equals("/api/showQuestionnaire")){
-                String responseTxt = "";
+                String responseTxt = "<!DOCTYPE html>" +
+                        "<html lang=\"en\">\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"UTF-8\">\n" +
+                        "    <title>Show category | Kristiania Questionnaire</title>\n" +
+                        "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                        "</head>\n" +
+                        "<body>";
                 Map<String, String> queryMap = parseRequestParameters(httpReader.messageBody);
 
                 Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
-                responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p>";
+                responseTxt += "<div class=\"questionnaire\"><h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p></div><form method=\"POST\" action=\"/api/answerQuestionnaire\">";
 
 
                 for (Category category : categoryDao.listAllWithParameter(questionnaire.getQuestionnaireId())){
-                        responseTxt += "<h2>"+ category.getCategoryTitle()+"</h2><p>"+ category.getCategoryText()+"</p>";
-
+                        responseTxt += "<div class=\"category\"><h2>"+ category.getCategoryTitle()+"</h2><p>"+ category.getCategoryText()+"</p>";
+                    int j = 0;
                     for (Question question : questionDao.listAllWithParameter(category.getCategoryId())) {
-                        responseTxt += "<p>" + question.getQuestionTitle() +
-                                "</p>" +
-                                "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
+                        responseTxt += "<h3>" + question.getQuestionTitle() +
+                                "</h3>" +
+                                "<label>" + question.getLowLabel() + "</label>";
 
-                        int j = 0;
+                      ;
                         for (int i = 0; i < question.getNumberOfValues(); i++) {
-                            responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i+1 +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
+                            responseTxt += "<input value=\"" + question.getQuestionId() + "v" + (i+1) +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
                         }
                         j++;
                         responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
                     }
-
+                    responseTxt += "</div>";
                 }
 
 
-                responseTxt += "<button value=\"Send\">Send</button></form>";
+                responseTxt += "<button value=\"Send\">Send</button></form></body></html>";
                 write200OKResponse(responseTxt, "text/html", clientSocket);
 
 
