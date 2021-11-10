@@ -4,11 +4,10 @@ import no.kristiania.Controller.*;
 import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao; //eventually remove after Controller in place
 import no.kristiania.Dao.QuestionnaireDao;
-import no.kristiania.Objects.Answer;
-import no.kristiania.Objects.Question;
-import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
@@ -17,19 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path; // eventually remove after Controller in place
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
 
 
 public class HttpServer {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
+
     private ServerSocket serverSocket;
-    // private Path contentRoot; // eventually remove after Controller in place
-    //private QuestionDao questionDao; // eventually remove after Controller in place
-    //private QuestionnaireDao questionnaireDao;
-    //private AnswerDao answerDao;
     private HashMap<String, HttpController> controllers = new HashMap<>();
 
     public HttpServer(int serverPort) throws IOException {
@@ -165,6 +160,7 @@ public class HttpServer {
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, questionDao));
+        logger.info("Starting http://localhost:{}/index.html", server.getPort());
     }
 
 

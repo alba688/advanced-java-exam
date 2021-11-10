@@ -1,9 +1,13 @@
 package no.kristiania.Http;
 
 import no.kristiania.Controller.*;
+import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import no.kristiania.DaoTest.TestData;
+import no.kristiania.Objects.Answer;
 import no.kristiania.Objects.Question;
+import no.kristiania.Objects.Questionnaire;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,8 +104,6 @@ public class HttpServerTest {
         assertEquals("What is your name?", question.getQuestionTitle());
     }
 
-
-/*
     @Test
     void shouldCreateNewQuestionnaire() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
@@ -127,6 +129,7 @@ public class HttpServerTest {
     @Test
     void shouldShowQuestionOptions() throws IOException, SQLException {
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
         Questionnaire firstQuestionnaire = new Questionnaire();
         firstQuestionnaire.setQuestionnaireTitle("Matvaner");
         Questionnaire secondQuestionnaire = new Questionnaire();
@@ -134,8 +137,7 @@ public class HttpServerTest {
         questionnaireDao.save(firstQuestionnaire);
         questionnaireDao.save(secondQuestionnaire);
 
-
-        //server.setQuestionnaireDao(questionnaireDao);
+        server.addController("/api/listQuestionnaires", new ListQuestionnairesController(questionnaireDao));
 
         HttpClient client = new HttpClient(
                 "localhost",
@@ -151,13 +153,10 @@ public class HttpServerTest {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaireTitle("Title");
         questionnaire.setQuestionnaireText("Text");
-
         questionnaireDao.save(questionnaire);
-
+        server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
 
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
-        server.addController("/api/newQuestion", new NewQuestionController(questionDao));
-
         Question question = new Question();
         question.setQuestionTitle("Do you like pizza?");
         question.setLowLabel("Not at all");
@@ -166,7 +165,7 @@ public class HttpServerTest {
         question.setQuestionnaireId(1);
         questionDao.save(question);
 
-        server.addController("/api/questions", new QuestionController(questionDao));
+        server.addController("/api/newQuestion", new NewQuestionController(questionDao));
 
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
         assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>Love it</label></form>", client.getMessageBody());
@@ -236,9 +235,6 @@ public class HttpServerTest {
         assertEquals(200, postClient.getStatusCode());
         assertEquals("Thank You", postClient.getMessageBody());
 
-
     }
 
-
- */
 }
