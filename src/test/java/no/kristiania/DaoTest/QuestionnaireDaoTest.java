@@ -1,15 +1,13 @@
 package no.kristiania.DaoTest;
 
+
 import no.kristiania.Dao.QuestionnaireDao;
-import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 
 public class QuestionnaireDaoTest {
@@ -22,7 +20,7 @@ public class QuestionnaireDaoTest {
         Questionnaire questionnaire = exampleQuestionnaire();
         dao.save(questionnaire);
 
-        assertThat(dao.retrieve(questionnaire.getQuestionnaire_id()))
+        assertThat(dao.retrieve(questionnaire.getQuestionnaireId()))
                 .usingRecursiveComparison()
                 .isEqualTo(questionnaire);
     }
@@ -35,17 +33,15 @@ public class QuestionnaireDaoTest {
         dao.save(anotherQuestionnaire);
 
         assertThat(dao.listAll())
-                .extracting(Questionnaire::getQuestionnaire_id)
-                .contains(questionnaire.getQuestionnaire_id(), anotherQuestionnaire.getQuestionnaire_id());
-
-
+                .extracting(Questionnaire::getQuestionnaireId)
+                .contains(questionnaire.getQuestionnaireId(), anotherQuestionnaire.getQuestionnaireId());
     }
 
 
     private Questionnaire exampleQuestionnaire() {
         Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaireTitle(TestData.pickOne("Favorite Food", "Favorite Drink", "Favorite Class"));
-        questionnaire.setQuestionnaireText(TestData.pickOne("Questionnaire Description", "Share Your Opinion", "Some Test Text"));
+        questionnaire.setQuestionnaireTitle(TestData.pickOne("School Politics", "Food", "Favorite Class"));
+        questionnaire.setQuestionnaireText(TestData.pickOne("Either or", "Share Your Opinion", "Some Test Text"));
         return questionnaire;
     }
 
