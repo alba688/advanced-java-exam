@@ -2,6 +2,8 @@ package no.kristiania.Http;
 
 import no.kristiania.Objects.Question;
 import no.kristiania.Objects.Questionnaire;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,6 +23,8 @@ public class HttpServer {
     private Path contentRoot;
     private List<Questionnaire> questionnaires = new ArrayList<>();
     private List<Question> questions = new ArrayList<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -208,6 +212,8 @@ public class HttpServer {
 
         server.setListOfQuestionnaires(List.of(questionnaire));
         server.setContentRoot(Paths.get("src/main/resources"));
+
+        logger.info("Starting http:localhost:{}/index.html", server.getPort());
     }
 
     public List<Questionnaire> getQuestionnaire() {
