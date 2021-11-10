@@ -81,6 +81,6 @@ public class HttpReader {
                 "Connection: close\r\n" +
                 "\r\n" +
                 messageBody;
-        socket.getOutputStream().write(response.getBytes(StandardCharsets.UTF_8));
+        socket.getOutputStream().write(response.getBytes());
     }
 }

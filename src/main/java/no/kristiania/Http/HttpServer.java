@@ -1,6 +1,6 @@
 package no.kristiania.Http;
 
-import no.kristiania.Controller.HttpController;
+import no.kristiania.Controller.*;
 import no.kristiania.Dao.AnswerDao;
 import no.kristiania.Dao.QuestionDao; //eventually remove after Controller in place
 import no.kristiania.Dao.QuestionnaireDao;
@@ -59,9 +59,9 @@ public class HttpServer {
         String[] requestLine = httpReader.statusLine.split(" ");
         String requestTarget = requestLine[1];
 
-            if(requestTarget.equals("/")) {
-                requestTarget = "/index.html";
-            }
+        if(requestTarget.equals("/")) {
+            requestTarget = "/index.html";
+        }
 
         int questionPos = requestTarget.indexOf('?');
         String fileTarget;
@@ -87,8 +87,9 @@ public class HttpServer {
                 Map<String, String> queryMap = HttpReader.parseRequestParameters(query);
                 yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
             }
-        String responseText = "Hello " +yourName;
-        write200OKResponse(responseText, "text/plain", clientSocket);
+
+            String responseText = "Hello " +yourName;
+            write200OKResponse(responseText, "text/plain", clientSocket);
 
         } else {
             InputStream fileResource = getClass().getResourceAsStream(fileTarget);
@@ -97,13 +98,11 @@ public class HttpServer {
                 fileResource.transferTo(buffer);
                 String responseText = buffer.toString();
 
-                String contentType;
+                String contentType = "text/plain";
                 if (requestTarget.endsWith(".html")) {
                     contentType = "text/html";
                 } else if (requestTarget.endsWith(".css")) {
                     contentType = "text/css";
-                } else {
-                    contentType = "text/plain";
                 }
                 write200OKResponse(responseText, contentType, clientSocket);
                 return;
@@ -153,10 +152,19 @@ public class HttpServer {
     }
 
     public static void main(String[] args) throws IOException {
+        DataSource dataSource = createDataSource();
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(dataSource);
+        QuestionDao questionDao = new QuestionDao(dataSource);
+        AnswerDao answerDao = new AnswerDao(dataSource);
         HttpServer server = new HttpServer(10001);
-        new QuestionDao(createDataSource());
-        new QuestionnaireDao(createDataSource());
-        new AnswerDao(createDataSource());
+        server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
+        server.addController("/api/deleteQuestion", new DeleteQuestionController(questionDao));
+        server.addController("/api/editQuestion", new EditQuestionController(questionDao));
+        server.addController("/api/listQuestions", new ListQuestionController(questionDao));
+        server.addController("/api/listQuestionnaires", new ListQuestionnairesController(questionnaireDao));
+        server.addController("/api/newQuestion", new NewQuestionController(questionDao));
+        server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
+        server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, questionDao));
     }
 
 
