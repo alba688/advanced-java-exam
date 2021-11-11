@@ -1,15 +1,9 @@
 package no.kristiania.Http;
 
 import no.kristiania.Controller.*;
-import no.kristiania.Dao.AnswerDao;
-import no.kristiania.Dao.QuestionDao;
-import no.kristiania.Dao.CategoryDao;
-import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Dao.*;
 import no.kristiania.DaoTest.TestData;
-import no.kristiania.Objects.Answer;
-import no.kristiania.Objects.Category;
-import no.kristiania.Objects.Question;
-import no.kristiania.Objects.Questionnaire;
+import no.kristiania.Objects.*;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -263,6 +257,7 @@ public class HttpServerTest {
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
         CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        PersonDao personDao = new PersonDao(TestData.testDataSource());
 
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaireTitle("Chosen questionnaire");
@@ -281,9 +276,16 @@ public class HttpServerTest {
 
         questionDao.save(question);
 
+        Person person = new Person();
+        person.setFirstName("Test");
+        person.setLastName("Person");
+
+        personDao.save(person);
+
         Answer answer = new Answer();
         answer.setAnswerValue(1);
         answer.setQuestionId(1);
+        answer.setPersonId(1);
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
         answerDao.save(answer);
 
