@@ -2,8 +2,6 @@ package no.kristiania.Http;
 
 import no.kristiania.Controller.*;
 import no.kristiania.Dao.AnswerDao;
-import no.kristiania.Dao.QuestionDao; //eventually remove after Controller in place
-import no.kristiania.Dao.QuestionnaireDao;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
@@ -25,7 +23,9 @@ public class HttpServer {
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     private ServerSocket serverSocket;
+
     private HashMap<String, HttpController> controllers = new HashMap<>();
+
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -104,7 +104,6 @@ public class HttpServer {
                 write200OKResponse(responseText, contentType, clientSocket);
                 return;
             }
-
             String responseText = "File not found: " + requestTarget;
 
             String response = "HTTP/1.1 404 File not found\r\n" +
@@ -154,6 +153,7 @@ public class HttpServer {
         QuestionDao questionDao = new QuestionDao(dataSource);
         AnswerDao answerDao = new AnswerDao(dataSource);
         HttpServer server = new HttpServer(10001);
+
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
         server.addController("/api/deleteQuestion", new DeleteQuestionController(questionDao));
         server.addController("/api/editQuestion", new EditQuestionController(questionDao));
@@ -163,6 +163,7 @@ public class HttpServer {
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, questionDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
+
     }
 
 

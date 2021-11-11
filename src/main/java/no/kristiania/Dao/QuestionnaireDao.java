@@ -1,13 +1,10 @@
 package no.kristiania.Dao;
-
 import no.kristiania.Objects.Questionnaire;
-
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.*;
 import java.util.List;
 
-public class QuestionnaireDao extends AbstractDao<Questionnaire>{
+public class QuestionnaireDao extends AbstractDao <Questionnaire> {
 
     public QuestionnaireDao(DataSource dataSource) {
         super(dataSource);
@@ -27,12 +24,11 @@ public class QuestionnaireDao extends AbstractDao<Questionnaire>{
 
                 try (ResultSet rs = statement.getGeneratedKeys()) {
                     rs.next();
-                    questionnaire.setQuestionnaire_id(rs.getInt("questionnaire_id"));
+                    questionnaire.setQuestionnaireId(rs.getInt("questionnaire_id"));
                 }
             }
         }
     }
-
     public Questionnaire retrieve(int id) throws SQLException {
         return super.retrieve("select * from questionnaire where questionnaire_id = (?)", id);
     }
@@ -44,7 +40,7 @@ public class QuestionnaireDao extends AbstractDao<Questionnaire>{
     @Override
     protected Questionnaire mapFromResultSet(ResultSet rs) throws SQLException {
         Questionnaire questionnaire = new Questionnaire();
-        questionnaire.setQuestionnaire_id(rs.getInt("questionnaire_id"));
+        questionnaire.setQuestionnaireId(rs.getInt("questionnaire_id"));
         questionnaire.setQuestionnaireTitle(rs.getString("questionnaire_title"));
         questionnaire.setQuestionnaireText(rs.getString("questionnaire_text"));
         return questionnaire;

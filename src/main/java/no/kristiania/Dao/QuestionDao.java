@@ -16,14 +16,14 @@ public class QuestionDao extends AbstractDao<Question> {
         try (Connection connection = dataSource.getConnection()) {
 
             try (PreparedStatement statement = connection.prepareStatement(
-                    "insert into question (question_title, low_label, high_label, number_of_values, questionnaire_id) values (?, ?, ?, ?, ?)",
+                    "insert into question (question_title, low_label, high_label, number_of_values, category_id) values (?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
                 statement.setString(1, question.getQuestionTitle());
                 statement.setString(2, question.getLowLabel());
                 statement.setString(3, question.getHighLabel());
                 statement.setInt(4, question.getNumberOfValues());
-                statement.setInt(5, question.getQuestionnaireId());
+                statement.setInt(5, question.getCategoryId());
 
                 statement.executeUpdate();
 
@@ -42,7 +42,7 @@ public class QuestionDao extends AbstractDao<Question> {
 
 
     public List<Question> listAllWithParameter(int id) throws SQLException {
-        return super.listAllWithParameter("select * from question where questionnaire_id = ?", id);
+        return super.listAllWithParameter("select * from question where category_id = ?", id);
     }
 
 
@@ -68,7 +68,7 @@ public class QuestionDao extends AbstractDao<Question> {
         question.setLowLabel(rs.getString("low_label"));
         question.setHighLabel(rs.getString("high_label"));
         question.setNumberOfValues(rs.getInt("number_of_values"));
-        question.setQuestionnaireId(rs.getInt("questionnaire_id"));
+        question.setCategoryId(rs.getInt("category_id"));
         return question;
     }
 }

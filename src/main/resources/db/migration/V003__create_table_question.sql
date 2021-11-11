@@ -5,7 +5,7 @@ create table question
     low_label varchar(100),
     high_label varchar(100),
     number_of_values int,
-    questionnaire_id int,
-    constraint fk_questionnaire
-    foreign key (questionnaire_id) references questionnaire(questionnaire_id)
+    category_id int,
+    constraint fk_category
+    foreign key (category_id) references category(category_id)
 );
