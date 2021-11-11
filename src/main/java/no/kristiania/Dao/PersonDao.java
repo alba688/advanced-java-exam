@@ -42,6 +42,11 @@ public class PersonDao extends AbstractDao<Person> {
 
     @Override
     protected Person mapFromResultSet(ResultSet rs) throws SQLException {
-        return null;
+        Person person = new Person();
+        person.setPersonId(rs.getInt("person_id"));
+        person.setFirstName(rs.getString("first_name"));
+        person.setLastName(rs.getString("last_name"));
+        person.setEmail(rs.getString("email"));
+        return person;
     }
 }
