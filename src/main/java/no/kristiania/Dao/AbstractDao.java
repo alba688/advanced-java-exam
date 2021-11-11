@@ -87,4 +87,17 @@ public abstract class AbstractDao<T> {
             }
         }
     }
+
+    protected int getAverage(String sql, int id) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, id);
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    rs.next();
+                    return rs.getInt(1);
+                }
+            }
+        }
+    }
 }

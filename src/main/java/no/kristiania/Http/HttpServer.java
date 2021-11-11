@@ -164,9 +164,11 @@ public class HttpServer {
         server.addController("/api/listQuestions", new ListQuestionController(questionDao));
         server.addController("/api/listQuestionnaires", new ListQuestionnairesController(questionnaireDao));
         server.addController("/api/listCategories", new ListCategoriesController(categoryDao));
+        server.addController("/api/newCategory", new NewCategoryController(categoryDao));
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
+        server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 
     }

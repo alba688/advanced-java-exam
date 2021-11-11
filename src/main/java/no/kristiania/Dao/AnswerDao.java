@@ -4,6 +4,7 @@ import no.kristiania.Objects.Answer;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 public class AnswerDao extends AbstractDao<Answer>{
 
@@ -29,6 +30,18 @@ public class AnswerDao extends AbstractDao<Answer>{
                 }
             }
         }
+    }
+
+    public Answer retrieve(int id) throws SQLException {
+        return super.retrieve("select * from answer where answer_id = (?)", id);
+    }
+
+    public List<Answer> listAll() throws SQLException {
+        return super.listAll("select * from answer");
+    }
+
+    public int getAverage(int id) throws SQLException {
+        return super.getAverage("select AVG(answer_value) from answer where question_id = (?)", id);
     }
     @Override
     protected Answer mapFromResultSet(ResultSet rs) throws SQLException {
