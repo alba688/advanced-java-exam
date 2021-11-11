@@ -20,8 +20,8 @@ public class NewQuestionController implements HttpController {
         Map<String, String> queryMap = HttpReader.parseRequestParameters(request.messageBody);
         Question question = new Question();
 
-        int questionnaireID = Integer.parseInt(queryMap.get("questionnaires"));
-        question.setQuestionnaireId(questionnaireID);
+        int categoryId = Integer.parseInt(queryMap.get("categories"));
+        question.setCategoryId(categoryId);
         question.setQuestionTitle(queryMap.get("title"));
         question.setLowLabel(queryMap.get("low_label"));
         question.setHighLabel(queryMap.get("high_label"));

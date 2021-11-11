@@ -2,6 +2,9 @@ package no.kristiania.Http;
 
 import no.kristiania.Controller.*;
 import no.kristiania.Dao.AnswerDao;
+import no.kristiania.Dao.CategoryDao;
+import no.kristiania.Dao.QuestionDao;
+import no.kristiania.Dao.QuestionnaireDao;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
@@ -150,6 +153,7 @@ public class HttpServer {
     public static void main(String[] args) throws IOException {
         DataSource dataSource = createDataSource();
         QuestionnaireDao questionnaireDao = new QuestionnaireDao(dataSource);
+        CategoryDao categoryDao = new CategoryDao(dataSource);
         QuestionDao questionDao = new QuestionDao(dataSource);
         AnswerDao answerDao = new AnswerDao(dataSource);
         HttpServer server = new HttpServer(10001);
@@ -159,9 +163,10 @@ public class HttpServer {
         server.addController("/api/editQuestion", new EditQuestionController(questionDao));
         server.addController("/api/listQuestions", new ListQuestionController(questionDao));
         server.addController("/api/listQuestionnaires", new ListQuestionnairesController(questionnaireDao));
+        server.addController("/api/listCategories", new ListCategoriesController(categoryDao));
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
-        server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, questionDao));
+        server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 
     }

@@ -6,6 +6,9 @@ public class Category {
     private String categoryText;
     private int questionnaireId;
 
+
+
+
     public int getCategoryId() {
         return categoryId;
     }

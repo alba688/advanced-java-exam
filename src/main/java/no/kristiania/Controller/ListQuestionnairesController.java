@@ -17,7 +17,7 @@ public class ListQuestionnairesController implements HttpController {
     public HttpReader handle(HttpReader request) throws SQLException {
         String responseText = "";
         for (Questionnaire questionnaire : questionnaireDao.listAll()) {
-            responseText += "<option value=\""+ questionnaire.getQuestionnaire_id() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
+            responseText += "<option value=\""+ questionnaire.getQuestionnaireId() +"\">"+ questionnaire.getQuestionnaireTitle() +"</option>";
         }
         return new HttpReader("HTTP/1.1 200 OK", responseText);
 
