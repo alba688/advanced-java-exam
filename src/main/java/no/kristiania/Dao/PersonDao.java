@@ -4,6 +4,7 @@ import no.kristiania.Objects.Person;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
 
 public class PersonDao extends AbstractDao<Person> {
 
@@ -37,6 +38,9 @@ public class PersonDao extends AbstractDao<Person> {
             return super.retrieve("select * from person where person_id = (?)", id);
     }
 
+    public List<Person> listAll() throws SQLException {
+        return super.listAll("select * from person");
+    }
     @Override
     protected Person mapFromResultSet(ResultSet rs) throws SQLException {
         Person person = new Person();
