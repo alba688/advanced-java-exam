@@ -5,6 +5,7 @@ public class Answer {
     private int answerValue;
     private int answerId;
 
+
     public int getAnswerId() {
         return answerId;
     }

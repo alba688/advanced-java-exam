@@ -3,3 +3,4 @@ target/
 .idea/
 
 /pgr203.properties
+/dependency-reduced-pom.xml
