@@ -8,61 +8,61 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpReader {
-    public String statusLine;
+    public String startLine;
+    public final Map<String, String> headerFields = new HashMap<>();
     public String messageBody;
-    public Map<String, String> headerFields = new HashMap<>();
+
 
     public HttpReader(Socket socket) throws IOException {
-        statusLine = HttpReader.readLine(socket);
+        startLine = HttpReader.readLine(socket);
         readHeader(socket);
+
         if (headerFields.containsKey("Content-Length")) {
             messageBody = HttpReader.readBytes(socket, getContentLength());
         }
     }
 
-    public HttpReader(String statusLine, String messageBody) {
-        this.statusLine = statusLine;
+   public HttpReader(String startLine, String messageBody) {
+        this.startLine = startLine;
         this.messageBody = messageBody;
     }
 
     static String readLine(Socket socket) throws IOException {
-
-        StringBuilder line = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         int c;
         while ((c = socket.getInputStream().read()) != '\r') {
-            line.append((char) c);
+            buffer.append((char)c);
         }
-        int expectedNewLine = socket.getInputStream().read();
-        assert expectedNewLine == '\n';
-        return line.toString();
+        int expectedNewline = socket.getInputStream().read();
+        assert expectedNewline == '\n';
+        return buffer.toString();
     }
 
     static String readBytes(Socket socket, int contentLength) throws IOException {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < contentLength ; i++) {
-            result.append((char)socket.getInputStream().read());
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < contentLength; i++) {
+            line.append((char)socket.getInputStream().read());
         }
-        return result.toString();
+        return line.toString();
     }
 
     private void readHeader(Socket socket) throws IOException {
         String headerLine;
-
         while (!(headerLine = HttpReader.readLine(socket)).isBlank()) {
             int colonPos = headerLine.indexOf(':');
-            String key = headerLine.substring(0, colonPos);
-            String value = headerLine.substring(colonPos + 1).trim();
-            headerFields.put(key, value);
+            String headerField = headerLine.substring(0, colonPos);
+            String headerValue = headerLine.substring(colonPos+1).trim();
+            headerFields.put(headerField, headerValue);
         }
     }
 
     public static Map<String, String> parseRequestParameters(String query) {
         Map<String, String> queryMap = new HashMap<>();
         for (String queryParameter : query.split("&")) {
-            int equalPos = queryParameter.indexOf("=");
-            String parameterName  = queryParameter.substring(0, equalPos);
-            String parameterValue = URLDecoder.decode(queryParameter.substring(equalPos+1), StandardCharsets.UTF_8);
-            queryMap.put(parameterName,parameterValue);
+            int equalsPos = queryParameter.indexOf('=');
+            String parameterName = queryParameter.substring(0, equalsPos);
+            String parameterValue = URLDecoder.decode(queryParameter.substring(equalsPos+1), StandardCharsets.UTF_8);
+            queryMap.put(parameterName, parameterValue);
         }
         return queryMap;
     }
@@ -76,7 +76,7 @@ public class HttpReader {
     }
 
     public void write(Socket socket) throws IOException {
-        String response = statusLine = "\r\n" +
+        String response = startLine + "\r\n" +
                 "Content-Length: " + messageBody.length() + "\r\n" +
                 "Connection: close\r\n" +
                 "\r\n" +

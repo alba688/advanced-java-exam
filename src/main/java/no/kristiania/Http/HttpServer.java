@@ -51,10 +51,10 @@ public class HttpServer {
 
         HttpReader httpReader = new HttpReader(clientSocket);
 
-        String[] requestLine = httpReader.statusLine.split(" ");
+        String[] requestLine = httpReader.startLine.split(" ");
         String requestTarget = requestLine[1];
 
-        if(requestTarget.equals("/")) {
+        if (requestTarget.equals("/")) {
             requestTarget = "/index.html";
         }
 
@@ -75,6 +75,7 @@ public class HttpServer {
             return;
         }
 
+
         if (fileTarget.equals("/hello")) {
             String yourName = "world";
 
@@ -86,9 +87,10 @@ public class HttpServer {
             String responseText = "Hello " +yourName;
             write200OKResponse(responseText, "text/plain", clientSocket);
 
+
         } else {
             InputStream fileResource = getClass().getResourceAsStream(fileTarget);
-            if(fileResource !=  null) {
+            if (fileResource != null) {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 fileResource.transferTo(buffer);
                 String responseText = buffer.toString();
@@ -106,11 +108,11 @@ public class HttpServer {
             String responseText = "File not found: " + requestTarget;
 
             String response = "HTTP/1.1 404 File not found\r\n" +
-                            "Content-Length: " + responseText.getBytes().length + "\r\n" +
-                            "Content-Type: text/plain\r\n" +
-                            "Connection: close\r\n" +
-                            "\r\n" +
-                            responseText;
+                    "Content-Length: " + responseText.getBytes().length + "\r\n" +
+                    "Content-Type: text/plain\r\n" +
+                    "Connection: close\r\n" +
+                    "\r\n" +
+                    responseText;
             clientSocket.getOutputStream().write(response.getBytes());
         }
     }

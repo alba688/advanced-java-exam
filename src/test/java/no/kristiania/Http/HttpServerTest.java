@@ -87,7 +87,10 @@ public class HttpServerTest {
 
     @Test
     void shouldCreateNewQuestion() throws IOException, SQLException {
-
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("title");
+        questionnaireDao.save(questionnaire);
         QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
 
@@ -164,8 +167,8 @@ public class HttpServerTest {
         question.setNumberOfValues(5);
         question.setQuestionnaireId(1);
         questionDao.save(question);
-
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
+
 
         HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
         assertEquals("<p>Do you like pizza?</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question1_answer\"></input><input value=\"1\"type=\"radio\" name=\"question1_answer\"></input><input value=\"2\"type=\"radio\" name=\"question1_answer\"></input><input value=\"3\"type=\"radio\" name=\"question1_answer\"></input><input value=\"4\"type=\"radio\" name=\"question1_answer\"></input><label>Love it</label></form>", client.getMessageBody());
@@ -208,19 +211,14 @@ public class HttpServerTest {
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setQuestionnaireTitle("Chosen questionnaire");
 
-        server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         questionnaireDao.save(questionnaire);
-
         Question question = new Question();
         question.setQuestionTitle("Question Title");
         question.setNumberOfValues(10);
         question.setQuestionnaireId(1);
-        server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         questionDao.save(question);
 
-
         Answer answer = new Answer();
-
         answer.setAnswerValue(1);
         answer.setQuestionId(1);
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
