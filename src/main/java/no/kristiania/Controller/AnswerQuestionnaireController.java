@@ -31,6 +31,7 @@ public class AnswerQuestionnaireController implements HttpController {
 
                 answer.setQuestionId(questionId);
                 answer.setAnswerValue(answerValue);
+                answer.setPersonId(1); // dette er kun for test
 
                 answerDao.save(answer);
             }
