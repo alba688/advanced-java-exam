@@ -37,9 +37,6 @@ public class PersonDao extends AbstractDao<Person> {
             return super.retrieve("select * from person where person_id = (?)", id);
     }
 
-
-
-
     @Override
     protected Person mapFromResultSet(ResultSet rs) throws SQLException {
         Person person = new Person();
