@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpReader {
@@ -27,15 +28,15 @@ public class HttpReader {
         this.messageBody = messageBody;
     }
 
-    public HttpReader(String startLine, String headerfield, String messageBody) {
+    public HttpReader(String startLine, String messageBody, String... headers) {
         this.startLine = startLine;
         this.messageBody = messageBody;
-
-        int colonPos = headerfield.indexOf(':');
-        String headerKey = headerfield.substring(0, colonPos);
-        String headerValue = headerfield.substring(colonPos+1).trim();
-        headerFields.put(headerKey, headerValue);
-
+        for (String headerfield : headers) {
+            int colonPos = headerfield.indexOf(':');
+            String headerKey = headerfield.substring(0, colonPos);
+            String headerValue = headerfield.substring(colonPos+1).trim();
+            headerFields.put(headerKey, headerValue);
+        }
     }
 
     static String readLine(Socket socket) throws IOException {
@@ -90,7 +91,10 @@ public class HttpReader {
         String response = startLine + "\r\n" +
                 "Content-Length: " + messageBody.length() + "\r\n";
                 if (headerFields.containsKey("Set-Cookie")) {
-                 response += "Set-Cookie: " + headerFields.get("Set-Cookie");
+                 response += "Set-Cookie: " + headerFields.get("Set-Cookie") + "\r\n";
+                }
+                if (headerFields.containsKey("Location")){
+                    response += "Location: " + headerFields.get("Location") + "\r\n";
                 }
                 response +=
                 "Connection: close\r\n" +

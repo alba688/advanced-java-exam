@@ -18,15 +18,23 @@ public class UserInputController implements HttpController{
     @Override
     public HttpReader handle(HttpReader request) throws SQLException {
         String responseTxt = "";
-        if (request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user") != null) {
-            int personID = Integer.parseInt(request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user"));
-            for (Person person : personDao.listAll()) {
-                if (person.getPersonId() == personID) {
-                    responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
+        if(request.getResponseHeader("Cookie") == null) {
+            responseTxt = "<form method=\"POST\" action=\"/api/savePerson\">" +
+                    " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
+                    "<label>Last Name: <input type=\"text\" name=\"lastName\" /></label><br>\n" +
+                    "<label>Email <input type=\"text\" name=\"email\" /></label><br>\n" +
+                    "<Button>Send</button>" +
+                    "</form>";
+
+        }  else if ((request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user")) != null) {
+                int personID = Integer.parseInt(request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user"));
+                for (Person person : personDao.listAll()) {
+                    if (person.getPersonId() == personID) {
+                        responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
+                    }
                 }
-            }
-        }
-        else {
+
+        } else {
             responseTxt = "<form method=\"POST\" action=\"/api/savePerson\">" +
                     " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
                     "<label>Last Name: <input type=\"text\" name=\"lastName\" /></label><br>\n" +
@@ -36,4 +44,6 @@ public class UserInputController implements HttpController{
         }
         return new HttpReader("HTTP/1.1 200 OK", responseTxt);
     }
+
+
 }

@@ -26,6 +26,6 @@ public class NewCategoryController implements HttpController {
         category.setQuestionnaireId(questionnaireId);
         categoryDao.save(category);
 
-        return new HttpReader("HTTP/1.1 301 Person saved\r\nLocation: /index.html", "Category created");
+        return new HttpReader("HTTP/1.1 301 Person saved", "Category created", "Location: /index.html");
     }
 }

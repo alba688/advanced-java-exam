@@ -21,6 +21,6 @@ public class NewQuestionnaireController implements HttpController {
         questionnaire.setQuestionnaireTitle(queryMap.get("title"));
         questionnaire.setQuestionnaireText(queryMap.get("text"));
         questionnaireDao.save(questionnaire);
-        return new HttpReader("HTTP/1.1 301 Questionnaire made\r\nLocation: /index.html", "Questionnaire created");
+        return new HttpReader("HTTP/1.1 301 Questionnaire made", "Questionnaire created", "Location: /index.html");
     }
 }
