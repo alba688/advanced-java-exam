@@ -30,24 +30,31 @@ public class ShowAnswersController implements HttpController{
 
     @Override
     public HttpReader handle(HttpReader request) throws SQLException {
-        String responseTxt = "";
+        String responseTxt = "<html lang=\"en\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Show Questionnaire | Kristiania Questionnaire</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                "</head>\n" +
+                "<body>";
         Map<String, String> queryMap = parseRequestParameters(request.messageBody);
 
         Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
-        responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p>";
+        responseTxt += "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p>";
 
 
         for (Category category : categoryDao.listAllWithParameter(questionnaire.getQuestionnaireId())){
-            responseTxt += "<h2>"+ category.getCategoryTitle()+"</h2>";
+            responseTxt += "<div class=\"category\"><h2>"+ category.getCategoryTitle()+"</h2>";
 
             for (Question question : questionDao.listAllWithParameter(category.getCategoryId())) {
                 responseTxt += "<p>" + question.getQuestionTitle() + "</p>";
 
-                responseTxt += "<p> Average answer value: " + answerDao.getAverage(question.getQuestionId()) + "</p>";
+                responseTxt += "<p> Average answer value: " + answerDao.getAverage(question.getQuestionId()) +" / " + question.getNumberOfValues() +"</p>";
             }
+            responseTxt += "</div>";
         }
-
+        responseTxt +="</body></html>";
         return new HttpReader("HTTP/1.1 200 OK", responseTxt);
     }
 }

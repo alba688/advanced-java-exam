@@ -27,34 +27,41 @@ public class ShowQuestionnaireQuestionsController implements HttpController {
 
     @Override
     public HttpReader handle(HttpReader request) throws SQLException {
-        String responseTxt = "";
+        String responseTxt = "<html lang=\"no\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Show Questionnaire | Kristiania Questionnaire</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                "</head>\n" +
+                "<body>";
         Map<String, String> queryMap = parseRequestParameters(request.messageBody);
 
         Questionnaire questionnaire = questionnaireDao.retrieve(Integer.parseInt(queryMap.get("questionnaires")));
 
-        responseTxt = "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p>";
+        responseTxt += "<h1>" + questionnaire.getQuestionnaireTitle() + "</h1><p>" + questionnaire.getQuestionnaireText() + "</p><form method=\"POST\" action=\"/api/answerQuestionnaire\">";
 
-
+        int j = 0;
         for (Category category : categoryDao.listAllWithParameter(questionnaire.getQuestionnaireId())){
-            responseTxt += "<h2>"+ category.getCategoryTitle()+"</h2><p>"+ category.getCategoryText()+"</p>";
+            responseTxt += "<div class=\"category\"><h2>"+ category.getCategoryTitle()+"</h2><p>"+ category.getCategoryText()+"</p>";
 
             for (Question question : questionDao.listAllWithParameter(category.getCategoryId())) {
                 responseTxt += "<p>" + question.getQuestionTitle() +
                         "</p>" +
-                        "<form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>" + question.getLowLabel() + "</label>";
+                        "<label>" + question.getLowLabel() + "</label>";
 
-                int j = 0;
+
                 for (int i = 1; i < question.getNumberOfValues(); i++) {
                     responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
                 }
                 j++;
                 responseTxt += "<label>" + question.getHighLabel() + "</label><br>";
             }
-
+                responseTxt += "</div>";
         }
 
 
-        responseTxt += "<button value=\"Send\">Send</button></form>";
+        responseTxt += "<button value=\"Send\">Send</button></form>" +
+                "</body></html>";
 
 
         return new HttpReader("HTTP/1.1 200 OK", responseTxt);

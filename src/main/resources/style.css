@@ -2,17 +2,27 @@ body {
     background-color: #eeeeee;
     font-family: sans-serif;
     color: darkslategray;
+    text-align: center;
 
 
 }
 input {
     background-color: white;
-    padding: 4px;
+    padding: 8px;
     border-radius: 5px;
+    margin: 10px;
+    border: none;
+}
+input:focus {
+    border: gray ;
 }
 select {
     padding: 10px;
     border-radius: 5px;
+    border: none;
+    text-align: center;
+    color: darkslategray;
+    margin: 10px;
 }
 select:focus {
     outline: none;
@@ -24,7 +34,7 @@ a {
     margin-bottom: 10px;
 }
 a:hover {
-    color: black;
+    color: lightslategray;
 }
 h1 {
 
@@ -49,21 +59,23 @@ h3 {
     padding: 20px;
     background-color: white;
     border-radius: 5px;
-    margin-bottom: 20px ;
+    margin-bottom: 20px;
+    margin: 0 50px 10px;
 }
 
 button {
-    margin-top: 20px;
+    margin: 30px 0;
     padding: 10px;
     background-color: darkslategray;
     border-radius: 5px;
     border: none;
     color: white;
+
 }
 button:hover {
     background-color: slategray;
 }
 .return {
     text-align: center;
-    padding: 30px;
+    width: 100%;
 }

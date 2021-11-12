@@ -25,6 +25,7 @@ public class NewCategoryController implements HttpController {
         int questionnaireId = Integer.parseInt(queryMap.get("questionnaire"));
         category.setQuestionnaireId(questionnaireId);
         categoryDao.save(category);
+
         return new HttpReader("HTTP/1.1 301 Person saved\r\nLocation: /index.html", "Category created");
     }
 }

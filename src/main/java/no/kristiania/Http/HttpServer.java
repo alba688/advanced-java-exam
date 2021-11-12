@@ -166,8 +166,6 @@ public class HttpServer {
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
-
-        server.addController("/api/newCategory", new NewCategoryController(categoryDao));
         server.addController("/api/savePerson", new SavePersonController(personDao));
         server.addController("/api/userInput", new UserInputController(personDao));
 
