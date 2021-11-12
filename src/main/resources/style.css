@@ -14,7 +14,9 @@ select {
     padding: 10px;
     border-radius: 5px;
 }
-
+select:focus {
+    outline: none;
+}
 a {
     color: darkslategray;
     text-decoration: none;

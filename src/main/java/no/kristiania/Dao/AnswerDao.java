@@ -44,6 +44,7 @@ public class AnswerDao extends AbstractDao<Answer>{
 
     public List<Answer> listAllWithParameter(int id) throws SQLException {
         return super.listAllWithParameter("select * from answer where question_id = (?)", id);
+    }
 
     public int getAverage(int id) throws SQLException {
         return super.getAverage("select AVG(answer_value) from answer where question_id = (?)", id);
