@@ -18,7 +18,7 @@ public class UserInputController implements HttpController{
     @Override
     public HttpReader handle(HttpReader request) throws SQLException {
         String responseTxt = "";
-        if (request.getResponseHeader("Cookie") != null) {
+        if (request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user") != null) {
             int personID = Integer.parseInt(request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user"));
             for (Person person : personDao.listAll()) {
                 if (person.getPersonId() == personID) {
