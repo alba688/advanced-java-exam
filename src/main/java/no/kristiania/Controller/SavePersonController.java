@@ -23,6 +23,6 @@ public class SavePersonController implements HttpController{
         person.setLastName(queryMap.get("lastName"));
         person.setEmail(queryMap.get("email"));
         personDao.save(person);
-            return new HttpReader("HTTP/1.1 200 OK", "Person created");
+            return new HttpReader("HTTP/1.1 200 OK", "Set-Cookie: user="+ person.getPersonId() +"; expires=Friday 12-Nov-21 12:00:00 GMT; path= /; domain: localhost\r\n", "Person created");
     }
 }
