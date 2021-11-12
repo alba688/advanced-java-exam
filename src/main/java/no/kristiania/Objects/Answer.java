@@ -4,6 +4,8 @@ public class Answer {
     private int questionId;
     private int answerValue;
     private int answerId;
+    private int personId;
+
 
     public int getAnswerId() {
         return answerId;
@@ -27,5 +29,14 @@ public class Answer {
 
     public void setAnswerValue(int answerValue) {
         this.answerValue = answerValue;
+    }
+
+    public void setPersonId(int personId) {
+
+        this.personId = personId;
+    }
+
+    public int getPersonId() {
+        return personId;
     }
 }

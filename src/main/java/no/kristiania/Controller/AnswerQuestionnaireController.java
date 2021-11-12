@@ -31,7 +31,8 @@ public class AnswerQuestionnaireController implements HttpController {
 
                 answer.setQuestionId(questionId);
                 answer.setAnswerValue(answerValue);
-
+                int personID = Integer.parseInt(request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user"));
+                answer.setPersonId(personID);
                 answerDao.save(answer);
             }
         }

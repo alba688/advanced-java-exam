@@ -27,6 +27,17 @@ public class HttpReader {
         this.messageBody = messageBody;
     }
 
+    public HttpReader(String startLine, String headerfield, String messageBody) {
+        this.startLine = startLine;
+        this.messageBody = messageBody;
+
+        int colonPos = headerfield.indexOf(':');
+        String headerKey = headerfield.substring(0, colonPos);
+        String headerValue = headerfield.substring(colonPos+1).trim();
+        headerFields.put(headerKey, headerValue);
+
+    }
+
     static String readLine(Socket socket) throws IOException {
         StringBuilder buffer = new StringBuilder();
         int c;
@@ -77,7 +88,11 @@ public class HttpReader {
 
     public void write(Socket socket) throws IOException {
         String response = startLine + "\r\n" +
-                "Content-Length: " + messageBody.length() + "\r\n" +
+                "Content-Length: " + messageBody.length() + "\r\n";
+                if (headerFields.containsKey("Set-Cookie")) {
+                 response += "Set-Cookie: " + headerFields.get("Set-Cookie");
+                }
+                response +=
                 "Connection: close\r\n" +
                 "\r\n" +
                 messageBody;

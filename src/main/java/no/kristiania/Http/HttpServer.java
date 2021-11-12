@@ -1,10 +1,7 @@
 package no.kristiania.Http;
 
 import no.kristiania.Controller.*;
-import no.kristiania.Dao.AnswerDao;
-import no.kristiania.Dao.CategoryDao;
-import no.kristiania.Dao.QuestionDao;
-import no.kristiania.Dao.QuestionnaireDao;
+import no.kristiania.Dao.*;
 import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
@@ -156,6 +153,7 @@ public class HttpServer {
         CategoryDao categoryDao = new CategoryDao(dataSource);
         QuestionDao questionDao = new QuestionDao(dataSource);
         AnswerDao answerDao = new AnswerDao(dataSource);
+        PersonDao personDao = new PersonDao(dataSource);
         HttpServer server = new HttpServer(10001);
 
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
@@ -168,6 +166,11 @@ public class HttpServer {
         server.addController("/api/newQuestion", new NewQuestionController(questionDao));
         server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
+
+        server.addController("/api/newCategory", new NewCategoryController(categoryDao));
+        server.addController("/api/savePerson", new SavePersonController(personDao));
+        server.addController("/api/userInput", new UserInputController(personDao));
+
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 

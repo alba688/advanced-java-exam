@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<h1>Velkommen</h1>
+    <div id="user"></div>
+    <h1>Show category</h1>
     <h1>Show Questionnaire</h1>
     <form method="POST" action="/api/showQuestionnaireQuestions">
         <label>Select questionnaire: <select id="questionnaires" name="questionnaires" ></select></label><br>
@@ -13,10 +17,16 @@
     </form>
     <div id="questions"></div>
     <div>
-        <a href=".">Return to front page</a>
+        <a class="return" href=".">Return to front page</a>
     </div>
 </body>
 <script>
+    fetch("/api/userInput")
+        .then(function(response) {
+            return response.text();
+        }).then(function(text) {
+        document.getElementById("user").innerHTML = text;
+    });
     fetch("/api/listQuestionnaires")
         .then(function(response) {
             return response.text();
