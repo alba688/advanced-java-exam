@@ -109,7 +109,7 @@ public class HttpServerTest {
                 "/api/newQuestion",
                 "categories=1&title=What+is+your+name%3F&values=5"
         );
-        assertEquals(200, postClient.getStatusCode());
+        assertEquals(303, postClient.getStatusCode());
         assertEquals(1 ,question.getCategoryId());
         assertEquals("What is your name?", question.getQuestionTitle());
     }
@@ -140,7 +140,7 @@ public class HttpServerTest {
                 "/api/newCategory",
                 "questionnaire=1&title=categoryTitle&text=categoryText"
         );
-        assertEquals(200, postClient.getStatusCode());
+        assertEquals(303, postClient.getStatusCode());
         assertEquals("categoryTitle", category.getCategoryTitle());
         assertEquals("categoryText", category.getCategoryText());
     }
@@ -158,7 +158,7 @@ public class HttpServerTest {
         HttpPostClient postClient = new HttpPostClient(
                 "localhost", server.getPort(), "/api/newQuestionnaire", "title=questionnaireTitle&text=questionnaireText"
         );
-        assertEquals(200, postClient.getStatusCode());
+        assertEquals(303, postClient.getStatusCode());
         assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
         assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
     }
@@ -247,7 +247,13 @@ public class HttpServerTest {
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
 
         HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
-        assertEquals("<h1>title</h1><p>text</p><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br><button value=\"Send\">Send</button></form>", postClient.getMessageBody());
+        assertEquals("<html lang=\"no\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Show Questionnaire | Kristiania Questionnaire</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                "</head>\n" +
+                "<body><h1>title</h1><p>text</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><div class=\"category\"><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br></div><p>You need to log in to answer questionnaire</p></form></body></html>", postClient.getMessageBody());
 
     }
 
@@ -295,7 +301,7 @@ public class HttpServerTest {
                 "/api/answerQuestionnaire",
                 "value=1&name=1"
         );
-        assertEquals(200, postClient.getStatusCode());
+        assertEquals(303, postClient.getStatusCode());
         assertEquals("Thank You", postClient.getMessageBody());
 
     }

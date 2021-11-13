@@ -42,7 +42,7 @@ public class AnswerQuestionnaireController implements HttpController {
             }
         }
 
-        return new HttpReader("HTTP/1.1 301 Questionnaire Answered", "Thank You", "Location: ../showQuestionnaire.html");
+        return new HttpReader("HTTP/1.1 303 Questionnaire Answered", "Thank You", "Location: ../showQuestionnaire.html");
 
     }
 }
