@@ -1,5 +1,6 @@
 [![Java CI with Maven](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml/badge.svg)](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml)
 
+
 ### README.md skal inneholde:
 
 * [ ] Korrekt link til Github Actions
@@ -53,3 +54,4 @@ Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi
 * [ ] JDBC koden fra forelesningen har en feil ved retrieve dersom id ikke finnes. Kan dere rette denne?
 * [-] Implementasjon av Chunked Transfer Encoding
 * [ ] Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
+

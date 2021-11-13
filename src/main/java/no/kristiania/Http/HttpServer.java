@@ -1,5 +1,6 @@
 package no.kristiania.Http;
 
+
 import no.kristiania.Controller.*;
 import no.kristiania.Dao.*;
 import org.flywaydb.core.Flyway;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.io.FileReader;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,6 +23,8 @@ public class HttpServer {
     private ServerSocket serverSocket;
     private HashMap<String, HttpController> controllers = new HashMap<>();
 
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
     public HttpServer(int serverPort) throws IOException {
         serverSocket = new ServerSocket(serverPort);
@@ -116,6 +120,7 @@ public class HttpServer {
         server.addController("/api/userInput", new UserInputController(personDao));
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
+
     }
 
 
