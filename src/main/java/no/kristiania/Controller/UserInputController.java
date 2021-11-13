@@ -27,7 +27,7 @@ public class UserInputController implements HttpController{
                         responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
                     }
                 }
-        } catch(NullPointerException npe) {
+        } catch(NullPointerException | NumberFormatException np) {
             responseTxt += "<form method=\"POST\" action=\"/api/savePerson\">" +
                     " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
                     "<label>Last Name: <input type=\"text\" name=\"lastName\" /></label><br>\n" +
