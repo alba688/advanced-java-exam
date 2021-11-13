@@ -35,20 +35,21 @@ Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi
 - Når brukeren besvarer en spørreundersøkelse registreres fornavn, etternavn og epost
 - Implementert Cookies i showQuestionnaire.html sånn at browseren husker hvem det er som svarer på Questionnaires. Dette også lagres i databasen med en Person Id. Dette kan eventuelt brukes til å vise alle besvarelse av en person.
 - Vi bruker abstraksjon i både DAO og Controller-klassene. Vi har en AbstractDao klasse som er brukt av alle Dao-klassene og en HttpController med handle() metode som må brukes av alle Controller-klassene.
-- Vi har brukt HTTP response 301 for å sende brukeren tilbake til forrige side etter de har utført en POST 
+- Vi har brukt HTTP response 303 for å sende brukeren tilbake til forrige side etter de har utført en POST 
 - Vi har håndtert riktig encoding hvis brukeren skriver på norsk med bruk av URLDecorder i HttpReader når action=POST blir fulført og at hver html-side har <html lang="no"> da input blir håndtert riktig.
 - I tilfelle brukeren setter in feil port eller request target "/" får men likevel innholdet av index.html istedenfor 404
 - Vi har rammeverk rundt http-håndtering med HttpReader, HttpClient, HttpPostClient
 - Vi har laget diagram av hvordan programmet virker samt UML diagram av database tabellene
-- Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
+- 
 
 ### GJENSTÅENDE EXTRAOPPGAVER
 
 * [-] Å opprette og liste spørsmål hadde vært logisk og REST-fult å gjøre med GET /api/questions og POST /api/questions. Klarer dere å endre måten dere håndterer controllers på slik at en GET og en POST request kan ha samme request target?
 * [x] Dersom noe alvorlig galt skjer vil serveren krasje. Serveren burde i stedet logge dette og returnere en status code 500 til brukeren
-* [ ] Et favikon er et lite ikon som nettleseren viser i tab-vinduer for en webapplikasjon. Kan dere lage et favorittikon for deres server? Tips: ikonet er en binærfil og ikke en tekst og det går derfor ikke an å laste den inn i en StringBuilder
+* [x] Et favikon er et lite ikon som nettleseren viser i tab-vinduer for en webapplikasjon. Kan dere lage et favorittikon for deres server? Tips: ikonet er en binærfil og ikke en tekst og det går derfor ikke an å laste den inn i en StringBuilder
 * [x] I forelesningen har vi sett på å innføre begrepet Controllers for å organisere logikken i serveren. Unntaket fra det som håndteres med controllers er håndtering av filer på disk. Kan dere skrive om HttpServer til å bruke en FileController for å lese filer fra disk?
 * [ ] JDBC koden fra forelesningen har en feil ved retrieve dersom id ikke finnes. Kan dere rette denne?
 * [x] I forelesningen fikk vi en rar feil med CSS når vi hadde <!DOCTYPE html>. Grunnen til det er feil content-type. Klarer dere å fikse det slik at det fungerer å ha <!DOCTYPE html> på starten av alle HTML-filer?
 * [x] I løpet av kurset har HttpServer og tester fått funksjonalitet som ikke lenger er nødvendig. Klarer dere å fjerne alt som er overflødig nå uten å også fjerne kode som fortsatt har verdi? (Advarsel: Denne kan trekke ned dersom dere gjør det feil!)
 * [-] Implementasjon av Chunked Transfer Encoding
+* [ ] Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
