@@ -19,32 +19,23 @@ public class UserInputController implements HttpController{
     public HttpReader handle(HttpReader request) throws SQLException {
         String responseTxt = "";
         String cookie = request.getResponseHeader("Cookie");
-        if (cookie != null) {
+        try {
                 int personID = Integer.parseInt(request.parseRequestParameters(cookie).get("user"));
                 for (Person person : personDao.listAll()) {
 
                     if (person.getPersonId() == personID) {
                         responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
-                    } else {
-                        responseTxt = "<form method=\"POST\" action=\"/api/savePerson\">" +
-                                " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
-                                "<label>Last Name: <input type=\"text\" name=\"lastName\" /></label><br>\n" +
-                                "<label>Email <input type=\"text\" name=\"email\" /></label><br>\n" +
-                                "<Button>Send</button>" +
-                                "</form>";
                     }
                 }
-        }   else {
-            responseTxt = "<form method=\"POST\" action=\"/api/savePerson\">" +
+        } catch(NullPointerException npe) {
+            responseTxt += "<form method=\"POST\" action=\"/api/savePerson\">" +
                     " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
                     "<label>Last Name: <input type=\"text\" name=\"lastName\" /></label><br>\n" +
                     "<label>Email <input type=\"text\" name=\"email\" /></label><br>\n" +
                     "<Button>Send</button>" +
                     "</form>";
 
-
         }
-
         return new HttpReader("HTTP/1.1 200 OK", responseTxt);
     }
 }

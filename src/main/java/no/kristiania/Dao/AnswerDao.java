@@ -1,6 +1,9 @@
 package no.kristiania.Dao;
 
+import no.kristiania.Http.HttpServer;
 import no.kristiania.Objects.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -11,6 +14,8 @@ public class AnswerDao extends AbstractDao<Answer>{
     public AnswerDao(DataSource dataSource) {
         super(dataSource);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(AnswerDao.class);
 
     public void save(Answer answer) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -30,23 +35,23 @@ public class AnswerDao extends AbstractDao<Answer>{
                     answer.setAnswerId((rs.getInt("answer_id")));
                 }
             }
+            logger.info("Answer saved");
         }
     }
 
     public Answer retrieve(int id) throws SQLException {
+        logger.info("Retrieved Answer" +id);
         return super.retrieve("select * from answer where answer_id = (?)", id);
+
     }
 
     public List<Answer> listAll() throws SQLException {
+        logger.info("Retrieved all answers");
         return super.listAll("select * from answer");
     }
-
-
-    public List<Answer> listAllWithParameter(int id) throws SQLException {
-        return super.listAllWithParameter("select * from answer where question_id = (?)", id);
-    }
-
+    
     public int getAverage(int id) throws SQLException {
+        logger.info("Retrieved avarage from answer "+ id);
         return super.getAverage("select AVG(answer_value) from answer where question_id = (?)", id);
 
     }

@@ -1,6 +1,9 @@
 package no.kristiania.Dao;
 
+import no.kristiania.Http.HttpServer;
 import no.kristiania.Objects.Question;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -17,6 +20,8 @@ public abstract class AbstractDao<T> {
         this.dataSource = dataSource;
     }
 
+
+
     abstract protected T mapFromResultSet(ResultSet rs) throws SQLException;
 
     protected T retrieve(String sql, int id) throws SQLException {
@@ -31,6 +36,7 @@ public abstract class AbstractDao<T> {
                 }
             }
         }
+
     }
 
     protected List<T> listAll(String sql) throws SQLException {

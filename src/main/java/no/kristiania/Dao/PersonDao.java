@@ -1,6 +1,8 @@
 package no.kristiania.Dao;
 
 import no.kristiania.Objects.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -11,6 +13,8 @@ public class PersonDao extends AbstractDao<Person> {
     public PersonDao(DataSource dataSource) {
         super(dataSource);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(PersonDao.class);
 
     public void save(Person person) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -32,13 +36,16 @@ public class PersonDao extends AbstractDao<Person> {
                 }
             }
         }
+        logger.info("Person "+ person.getFirstName() +" saved");
     }
 
     public Person retrieve(int id) throws SQLException {
+        logger.info("Person "+ id +" retrieved");
             return super.retrieve("select * from person where person_id = (?)", id);
     }
 
     public List<Person> listAll() throws SQLException {
+        logger.info("All persons listed");
         return super.listAll("select * from person");
     }
     @Override

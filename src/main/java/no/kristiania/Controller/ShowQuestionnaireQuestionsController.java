@@ -59,8 +59,14 @@ public class ShowQuestionnaireQuestionsController implements HttpController {
                 responseTxt += "</div>";
         }
 
+        try {
+            Integer.parseInt(request.parseRequestParameters(request.getResponseHeader("Cookie")).get("user"));
+        responseTxt += "<button value=\"Send\">Send</button>";
+        } catch (NullPointerException npe) {
+            responseTxt+= "<p>You need to log in to answer questionnaire</p>";
+        }
 
-        responseTxt += "<button value=\"Send\">Send</button></form>" +
+        responseTxt += "</form>" +
                 "</body></html>";
 
 

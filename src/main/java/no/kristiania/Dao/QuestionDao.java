@@ -1,6 +1,8 @@
 package no.kristiania.Dao;
 
 import no.kristiania.Objects.Question;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -11,6 +13,8 @@ public class QuestionDao extends AbstractDao<Question> {
     public QuestionDao(DataSource dataSource) {
         super(dataSource);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(QuestionDao.class);
 
     public void save(Question question) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -33,29 +37,35 @@ public class QuestionDao extends AbstractDao<Question> {
                 }
             }
         }
+        logger.info("Question " + question.getQuestionTitle() + " saved");
 
     }
 
     public Question retrieve(int questionId) throws SQLException {
+        logger.info("Question " + questionId + " saved");
         return super.retrieve("select * from question where question_id = ?", questionId);
     }
 
 
     public List<Question> listAllWithParameter(int id) throws SQLException {
+        logger.info("All questions belonging to category "+ id  + " listed");
         return super.listAllWithParameter("select * from question where category_id = ?", id);
     }
 
 
     public List<Question> listAll() throws SQLException {
+        logger.info("All questions listed");
         return super.listAll("select * from question");
     }
 
 
     public void edit(Question editedQuestion) throws SQLException {
+        logger.info("Question " + editedQuestion.getQuestionTitle() + " edited");
         super.edit("update question set question_title = ?, low_label = ?, high_label = ?, number_of_values = ? where question_id = ?", editedQuestion);
     }
 
     public void delete(int questionId) throws SQLException {
+        logger.info("Question " + questionId + " deleted");
         super.delete("delete from answer where question_id = ?", questionId);
         super.delete("delete from question where question_id = ?", questionId);
     }

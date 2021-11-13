@@ -1,5 +1,8 @@
 package no.kristiania.Dao;
 import no.kristiania.Objects.Questionnaire;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
@@ -9,6 +12,8 @@ public class QuestionnaireDao extends AbstractDao <Questionnaire> {
     public QuestionnaireDao(DataSource dataSource) {
         super(dataSource);
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(QuestionnaireDao.class);
 
     public void save(Questionnaire questionnaire) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -28,12 +33,15 @@ public class QuestionnaireDao extends AbstractDao <Questionnaire> {
                 }
             }
         }
+        logger.info("Questionnaire "+ questionnaire.getQuestionnaireTitle() +" saved");
     }
     public Questionnaire retrieve(int id) throws SQLException {
+        logger.info("Questionnaire "+ id +" retrieved");
         return super.retrieve("select * from questionnaire where questionnaire_id = (?)", id);
     }
 
     public List<Questionnaire> listAll() throws SQLException {
+        logger.info("All questionnaire listed");
         return super.listAll("select * from questionnaire");
     }
 

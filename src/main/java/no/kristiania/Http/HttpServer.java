@@ -38,12 +38,13 @@ public class HttpServer {
                 handleClient();
             }
         } catch (IOException e) {
-            System.out.println("No Connection for socket");
+            logger.warn("No Connection for socket");
             e.printStackTrace();
         }
     }
 
     private void handleClient() throws IOException {
+
         Socket clientSocket = serverSocket.accept();
 
         HttpReader httpReader = new HttpReader(clientSocket);
@@ -71,6 +72,7 @@ public class HttpServer {
              HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
              readerResponse.write(clientSocket);
             } catch (SQLException sql) {
+                logger.warn("SQL is missing or invalid");
                 String responseTxt = "Internal Server Error";
                 String response = "HTTP/1.1 500 Internal Server Error\r\n" +
                         "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
