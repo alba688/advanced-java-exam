@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit a question | Kristiania Questionnaire</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico">
+</head>
+<body>
+<h1>Edit a question</h1>
+<form method="POST" action="/api/editQuestion">
+  <label>Select question: <select id="questions" name="questions" ></select></label><br>
+  <label>Question Title: <input type="text" name="title"/></label><br>
+  <label>Label for lowest value <input type="text" name="low_label" /></label><br>
+  <label>Label for highest value <input type="text" name="high_label" /></label><br>
+  <label>Number of Values <input type="number" name="values" /></label><br>
+  <button>Update question</button>
+</form>
+<div>
+  <a href=".">Return to front page</a>
+</div>
+</body>
+<script>
+  fetch("/api/listQuestions")
+          .then(function(response) {
+            return response.text();
+          }).then(function(text) {
+    document.getElementById("questions").innerHTML = text;
+  });
+</script>
+</html>

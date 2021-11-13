@@ -19,7 +19,7 @@ public class HttpClient {
 
         httpReader = new HttpReader(socket);
 
-        String[] statusLine = httpReader.statusLine.split(" ");
+        String[] statusLine = httpReader.startLine.split(" ");
         this.statusCode = Integer.parseInt(statusLine[1]);
     }
 

@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
-    <title>Add questionnaire | Kristiania Questionnaire</title>
+    <title>Add category | Kristiania Questionnaire</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" type="image/ico" href="favicon.ico">
 </head>
 <body>
-<h1>Add questionnaire</h1>
+<h1>Add category</h1>
 <form method="POST" action="/api/newQuestionnaire">
     <label>Questionnaire title: <input type="text" name="title" /></label>
     <label>Questionnaire text: <input type="text" name="text" /></label>
     <button>Add</button>
 </form>
 <div>
-    <a href=".">Return to front page</a>
+    <a class="return" href=".">Return to front page</a>
 </div>
 </body>
 </html>

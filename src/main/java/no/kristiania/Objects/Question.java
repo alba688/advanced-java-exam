@@ -1,23 +1,13 @@
 package no.kristiania.Objects;
 
 public class Question {
-    private int questionnaireId;
+    private int categoryId;
     private int questionId;
     private String questionTitle;
-    private String questionText;
     private String lowLabel;
     private String highLabel;
     private int numberOfValues;
 
-
-
-/*    public Question(String question) {
-//
-//    }
-//
-//    public Question() {
-//      }
-*/
 
     public int getQuestionId() {
         return questionId;
@@ -33,14 +23,6 @@ public class Question {
 
     public void setQuestionTitle(String questionTitle) {
         this.questionTitle = questionTitle;
-    }
-
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
     }
 
     public String getLowLabel() {
@@ -59,12 +41,12 @@ public class Question {
         this.highLabel = highLabel;
     }
 
-    public int getQuestionnaireId() {
-        return questionnaireId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setQuestionnaireId(int questionnaireId) {
-        this.questionnaireId = questionnaireId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public int getNumberOfValues() {

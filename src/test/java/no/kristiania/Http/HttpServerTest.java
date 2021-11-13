@@ -1,23 +1,33 @@
 package no.kristiania.Http;
 
-import no.kristiania.Objects.Question;
-import no.kristiania.Objects.Questionnaire;
+import no.kristiania.Controller.*;
+import no.kristiania.Dao.*;
+import no.kristiania.DaoTest.TestData;
+import no.kristiania.Objects.*;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.LocalTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HttpServerTest {
 
     private final HttpServer server = new HttpServer(0);
+    CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+    QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
 
     public HttpServerTest() throws IOException {
+    }
+
+    @BeforeEach
+    void setup() {
+        Flyway.configure().dataSource(TestData.testDataSource()).load().clean();
     }
 
     @Test
@@ -35,23 +45,20 @@ public class HttpServerTest {
 
     @Test
     void shouldReturn200Response() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/index.html");
         assertEquals(200, client.getStatusCode());
     }
 
     @Test
     void shouldReturnContentType() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
-        assertEquals("text/plain", client.getResponseHeader("Content-Type"));
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/index.html");
+        assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }
 
     @Test
     void shouldRespondWithFileOnDisk() throws IOException {
-        Path contentRoot = Paths.get("target/test-classes");
         String fileContent = "Content created at " + LocalTime.now();
-        Files.writeString(contentRoot.resolve("file.txt"), fileContent);
-
-        server.setContentRoot(contentRoot);
+        Files.write(Paths.get("target/test-classes/file.txt"), fileContent.getBytes());
 
         HttpClient client = new HttpClient("localhost", server.getPort(), "/file.txt");
         assertEquals(fileContent, client.getMessageBody());
@@ -60,13 +67,9 @@ public class HttpServerTest {
 
     @Test
     void shouldReturnContentTypeBasedOnFileEnding() throws IOException {
-        Path contentRoot = Paths.get("target/test-classes");
 
         String fileContent = "<!DOCTYPE html><html><h1>Hello</h1></html>";
-
-        Files.writeString(contentRoot.resolve("file.html"), fileContent);
-
-        server.setContentRoot(contentRoot);
+        Files.write(Paths.get("target/test-classes/file.html"), fileContent.getBytes());
 
         HttpClient client = new HttpClient("localhost", server.getPort(), "/file.html");
         assertEquals(fileContent, client.getMessageBody());
@@ -74,69 +77,226 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldEchoQueryParameters() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello?firstName=Test&lastName=Tester");
-        assertEquals("Hello Test Tester", client.getMessageBody());
+    void shouldCreateNewQuestion() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaireDao.save(questionnaire);
 
-    }
-    @Test
-    void shouldShowQuestionOptions() throws IOException {
-        Questionnaire firstQuestionnaire = new Questionnaire();
-        firstQuestionnaire.setQuestionnaireTitle("Matvaner");
-        Questionnaire secondQuestionnaire = new Questionnaire();
-        secondQuestionnaire.setQuestionnaireTitle("Sosiale Vaner");
+        CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+        Category category = new Category();
+        category.setCategoryTitle("Title");
+        category.setQuestionnaireId(1);
+        categoryDao.save(category);
+
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        Question question = new Question();
+        question.setQuestionTitle("What is your name?");
+        question.setNumberOfValues(5);
+        question.setCategoryId(1);
+        server.addController("/api/newQuestion", new NewQuestionController(questionDao));
 
 
-        server.setListOfQuestionnaires(List.of(firstQuestionnaire, secondQuestionnaire));
-
-        HttpClient client = new HttpClient(
-                "localhost",
-                server.getPort(),
-                "/api/listQuestionnaires");
-        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
-                client.getMessageBody());
-    }
-
-    @Test
-    void shouldCreateNewQuestion() throws IOException {
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
                 "/api/newQuestion",
-                "questionnaires=1&title=What+is+your+name%3F&values=5"
+                "categories=1&title=What+is+your+name%3F&values=5"
         );
-        assertEquals(200, postClient.getStatusCode());
-        Question question = server.getQuestion().get(0);
-        assertEquals(1 ,question.getQuestionnaireId());
+        assertEquals(303, postClient.getStatusCode());
+        assertEquals(1 ,question.getCategoryId());
         assertEquals("What is your name?", question.getQuestionTitle());
-
     }
 
     @Test
-    void shouldCreateNewQuestionnaire() throws IOException {
+    void shouldCreateNewCategory() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+        Questionnaire exampleQuestionnaire = new Questionnaire();
+        exampleQuestionnaire.setQuestionnaireTitle("questionnaireTitle");
+        exampleQuestionnaire.setQuestionnaireText("questionnaireText");
+
+        questionnaireDao.save(exampleQuestionnaire);
+
+        CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+
+        Category category = new Category();
+        category.setCategoryTitle("categoryTitle");
+        category.setCategoryText("categoryText");
+        category.setQuestionnaireId(1);
+        categoryDao.save(category);
+
+        server.addController("/api/newCategory", new NewCategoryController(categoryDao));
+
         HttpPostClient postClient = new HttpPostClient(
                 "localhost",
                 server.getPort(),
-                "/api/newQuestionnaire",
-                "title=questionnaireTitle&text=questionnaireText"
+                "/api/newCategory",
+                "questionnaire=1&title=categoryTitle&text=categoryText"
         );
-        assertEquals(200, postClient.getStatusCode());
-        Questionnaire questionnaire = server.getQuestionnaire().get(0);
+        assertEquals(303, postClient.getStatusCode());
+        assertEquals("categoryTitle", category.getCategoryTitle());
+        assertEquals("categoryText", category.getCategoryText());
+    }
+
+    @Test
+    void shouldCreateNewQuestionnaire() throws SQLException, IOException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("questionnaireTitle");
+        questionnaire.setQuestionnaireText("questionnaireText");
+        questionnaireDao.save(questionnaire);
+
+        server.addController("/api/newQuestionnaire", new NewQuestionnaireController(questionnaireDao));
+
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost", server.getPort(), "/api/newQuestionnaire", "title=questionnaireTitle&text=questionnaireText"
+        );
+        assertEquals(303, postClient.getStatusCode());
         assertEquals("questionnaireTitle", questionnaire.getQuestionnaireTitle());
         assertEquals("questionnaireText", questionnaire.getQuestionnaireText());
     }
 
     @Test
-    void shouldShowQuestionWithText() throws IOException {
+    void shouldShowQuestionnaires() throws SQLException, IOException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+
+
+
+        Questionnaire firstQuestionnaire = new Questionnaire();
+        firstQuestionnaire.setQuestionnaireTitle("Classes");
+        Questionnaire secondQuestionnaire = new Questionnaire();
+        secondQuestionnaire.setQuestionnaireTitle("Food");
+        questionnaireDao.save(firstQuestionnaire);
+        questionnaireDao.save(secondQuestionnaire);
+
+        server.addController("/api/listQuestionnaires", new ListQuestionnairesController(questionnaireDao));
+        HttpClient client = new HttpClient(
+                "localhost",
+                server.getPort(),
+            "/api/listQuestionnaires");
+        assertEquals("<option value=\"1\">Classes</option><option value=\"2\">Food</option>",
+                client.getMessageBody());
+
+    }
+
+    @Test
+    void shouldShowQuestionCategories() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Title");
+        questionnaireDao.save(questionnaire);
+
+
+        CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+
+        Category category = new Category();
+        category.setCategoryTitle("Matvaner");
+        category.setCategoryText("text");
+        category.setQuestionnaireId(1);
+        categoryDao.save(category);
+
+        Category category2 = new Category();
+        category2.setCategoryTitle("Sosiale Vaner");
+        category2.setCategoryText("text");
+        category2.setQuestionnaireId(1);
+        categoryDao.save(category2);
+
+
+        server.addController("/api/listCategories", new ListCategoriesController(categoryDao));
+
+        HttpClient client = new HttpClient(
+                "localhost",
+                server.getPort(),
+                "/api/listCategories");
+        assertEquals("<option value=\"1\">Matvaner</option><option value=\"2\">Sosiale Vaner</option>",
+                client.getMessageBody());
+    }
+
+    @Test
+    void shouldShowQuestionsWithSpecificQuestionnaire() throws IOException, SQLException {
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("title");
+        questionnaire.setQuestionnaireText("text");
+        questionnaireDao.save(questionnaire);
+
+        Category category = new Category();
+        category.setCategoryTitle("Chosen questionnaire");
+        category.setCategoryId(1);
+        category.setQuestionnaireId(1);
+        categoryDao.save(category);
+
         Question question = new Question();
-        question.setQuestionTitle("Do you like pizza?");
-        question.setQuestionText("Choose between 1 and 5");
-        question.setLowLabel("Not at all");
-        question.setHighLabel("Love it");
+        question.setQuestionTitle("Question Title");
+        question.setLowLabel("Low");
+        question.setHighLabel("High");
         question.setNumberOfValues(5);
-        server.getQuestion().add(question);
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
-        assertEquals("<p>Do you like pizza? Choose between 1 and 5</p><form method=\"\" action=\"\"><label>Not at all</label><input value=\"0\"type=\"radio\" name=\"question0_answer\"></input><input value=\"1\"type=\"radio\" name=\"question0_answer\"></input><input value=\"2\"type=\"radio\" name=\"question0_answer\"></input><input value=\"3\"type=\"radio\" name=\"question0_answer\"></input><input value=\"4\"type=\"radio\" name=\"question0_answer\"></input><label>Love it</label></form>", client.getMessageBody());
+        question.setCategoryId(category.getCategoryId());
+
+        questionDao.save(question);
+        server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
+
+        HttpPostClient postClient = new HttpPostClient("localhost", server.getPort(), "/api/showQuestionnaireQuestions", "questionnaires=1");
+        assertEquals("<html lang=\"no\">\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Show Questionnaire | Kristiania Questionnaire</title>\n" +
+                "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
+                "</head>\n" +
+                "<body><h1>title</h1><p>text</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><div class=\"category\"><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br></div><p>You need to log in to answer questionnaire</p></form></body></html>", postClient.getMessageBody());
+
+    }
+
+    @Test
+    void shouldCreateAnswer() throws IOException, SQLException {
+        AnswerDao answerDao = new AnswerDao(TestData.testDataSource());
+        QuestionDao questionDao = new QuestionDao(TestData.testDataSource());
+        CategoryDao categoryDao = new CategoryDao(TestData.testDataSource());
+        QuestionnaireDao questionnaireDao = new QuestionnaireDao(TestData.testDataSource());
+        PersonDao personDao = new PersonDao(TestData.testDataSource());
+
+        Questionnaire questionnaire = new Questionnaire();
+        questionnaire.setQuestionnaireTitle("Chosen questionnaire");
+        questionnaireDao.save(questionnaire);
+
+        Category category = new Category();
+        category.setCategoryTitle("Chosen category");
+        category.setQuestionnaireId(1);
+
+        categoryDao.save(category);
+
+        Question question = new Question();
+        question.setQuestionTitle("Question Title");
+        question.setNumberOfValues(10);
+        question.setCategoryId(1);
+
+        questionDao.save(question);
+
+        Person person = new Person();
+        person.setFirstName("Test");
+        person.setLastName("Person");
+
+        personDao.save(person);
+
+        Answer answer = new Answer();
+        answer.setAnswerValue(1);
+        answer.setQuestionId(1);
+        answer.setPersonId(1);
+        server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
+        answerDao.save(answer);
+
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/answerQuestionnaire",
+                "value=1&name=1"
+        );
+        assertEquals(303, postClient.getStatusCode());
+        assertEquals("Thank You", postClient.getMessageBody());
 
     }
 
