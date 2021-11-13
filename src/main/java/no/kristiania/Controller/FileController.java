@@ -9,14 +9,13 @@ import java.sql.SQLException;
 
 public class FileController implements HttpController{
     @Override
-    public HttpReader handle(HttpReader request) throws SQLException, IOException {
+    public HttpReader handle(HttpReader request) throws IOException {
         String[] requestLine = request.startLine.split(" ");
         String fileTarget = requestLine[1];
 
         if (fileTarget.equals("/")) {
             fileTarget = "/index.html";
         }
-
 
         InputStream fileResource = getClass().getResourceAsStream(fileTarget);
         String contentType = "text/plain";

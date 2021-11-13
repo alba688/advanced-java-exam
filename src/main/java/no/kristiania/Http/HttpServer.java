@@ -82,8 +82,14 @@ public class HttpServer {
                 addController((fileTarget), new FileController());
                 HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
                 readerResponse.write(clientSocket);
-            } catch (Exception e) {
-
+            } catch (IOException | SQLException sql) {
+                logger.warn("SQL is missing or invalid, or File not Found");
+                String responseTxt = "Internal Server Error";
+                String response = "HTTP/1.1 500 Internal Server Error\r\n" +
+                        "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
+                        "Connection: close\r\n\r\n"
+                        + responseTxt;
+                clientSocket.getOutputStream().write(response.getBytes());
             }
             return;
         }
