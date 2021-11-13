@@ -1,0 +1,23 @@
+@startuml
+
+actor Browser
+participant HttpServer
+participant HttpController
+participant AddNewQuestionController
+participant QuestionDao
+database QUESTIONNAIRE_DB
+
+Browser -> HttpServer: POST: /api/newQuestion
+HttpServer -> HttpController: get ("/api/newQuestion)
+HttpServer <-- HttpController: AddNewQuestionController
+HttpServer -> AddNewQuestionController: handle(request)
+AddNewQuestionController -> AddNewQuestionController: question = new Question()
+AddNewQuestionController -> AddNewQuestionController: question.setQuestionTitle(request.get("question_title"))
+note left of AddNewQuestionController: Reads form parameters from request body
+AddNewQuestionController -> QuestionDao: questionDao.save(question)
+QuestionDao -> QUESTIONNAIRE_DB: INSERT INTO questions (...)
+HttpServer <-- AddNewQuestionController: OK 200
+HttpServer -> HttpServer: response.write(socket)
+Browser <-- HttpServer: HTTP/1.1 200 OK
+
+@enduml
