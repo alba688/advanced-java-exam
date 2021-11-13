@@ -21,9 +21,7 @@ import java.util.*;
 public class HttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
-
     private ServerSocket serverSocket;
-
     private HashMap<String, HttpController> controllers = new HashMap<>();
 
 
@@ -35,7 +33,7 @@ public class HttpServer {
     private void handleClients() {
         try {
             while (true) {
-                handleClient();
+            handleClient();
             }
         } catch (IOException e) {
             logger.warn("No Connection for socket");
@@ -46,22 +44,9 @@ public class HttpServer {
     private void handleClient() throws IOException {
 
         Socket clientSocket = serverSocket.accept();
-
         HttpReader httpReader = new HttpReader(clientSocket);
-
         String[] requestLine = httpReader.startLine.split(" ");
-        String requestTarget = requestLine[1];
-
-        int questionPos = requestTarget.indexOf('?');
-        String fileTarget;
-        String query = null;
-
-        if (questionPos != -1) {
-            fileTarget = requestTarget.substring(0, questionPos);
-            query = requestTarget.substring(questionPos+1);
-        } else {
-            fileTarget = requestTarget;
-        }
+        String fileTarget = requestLine[1];
 
         if (controllers.containsKey(fileTarget)) {
             try {
@@ -76,14 +61,12 @@ public class HttpServer {
                         + responseTxt;
                 clientSocket.getOutputStream().write(response.getBytes());
             }
-            return;
         } else {
             try {
-                addController((fileTarget), new FileController());
-                HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
+                HttpReader readerResponse = new FileController().handle(httpReader);
                 readerResponse.write(clientSocket);
-            } catch (IOException | SQLException sql) {
-                logger.warn("SQL is missing or invalid, or File not Found");
+            } catch (IOException ioe) {
+                logger.warn("Error reading file from server");
                 String responseTxt = "Internal Server Error";
                 String response = "HTTP/1.1 500 Internal Server Error\r\n" +
                         "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
@@ -91,18 +74,8 @@ public class HttpServer {
                         + responseTxt;
                 clientSocket.getOutputStream().write(response.getBytes());
             }
-            return;
         }
-    }
-
-    private void write200OKResponse(String responseText, String contentType, Socket clientSocket) throws IOException {
-        String response = "HTTP/1.1 200 OK\r\n"+
-                "Content-Length: "+ responseText.getBytes().length + "\r\n" +
-                "Content-Type: " + contentType + "\r\n" +
-                "Connection: close"+ "\r\n" +
-                "\r\n" +
-                responseText;
-        clientSocket.getOutputStream().write(response.getBytes());
+        return;
     }
 
     public int getPort() {
@@ -111,9 +84,9 @@ public class HttpServer {
 
     private static DataSource createDataSource() throws IOException {
         Properties properties = new Properties();
-        try (FileReader reader = new FileReader("pgr203.properties")) {
-            properties.load(reader);
-        }
+            try (FileReader reader = new FileReader("pgr203.properties")) {
+                properties.load(reader);
+            }
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setUrl(properties.getProperty("dataSource.url", "jdbc:postgresql://localhost:5432/questionnaire_db"));
         dataSource.setUser(properties.getProperty("dataSource.user", "questionnaire_dbuser"));
@@ -134,7 +107,6 @@ public class HttpServer {
         AnswerDao answerDao = new AnswerDao(dataSource);
         PersonDao personDao = new PersonDao(dataSource);
         HttpServer server = new HttpServer(10001);
-
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
         server.addController("/api/deleteQuestion", new DeleteQuestionController(questionDao));
         server.addController("/api/editQuestion", new EditQuestionController(questionDao));
@@ -147,7 +119,6 @@ public class HttpServer {
         server.addController("/api/showQuestionnaireQuestions", new ShowQuestionnaireQuestionsController(questionnaireDao, categoryDao, questionDao));
         server.addController("/api/savePerson", new SavePersonController(personDao));
         server.addController("/api/userInput", new UserInputController(personDao));
-
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 
