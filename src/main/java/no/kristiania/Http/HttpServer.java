@@ -6,12 +6,9 @@ import org.flywaydb.core.Flyway;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.sql.DataSource;
-import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -107,6 +104,7 @@ public class HttpServer {
         AnswerDao answerDao = new AnswerDao(dataSource);
         PersonDao personDao = new PersonDao(dataSource);
         HttpServer server = new HttpServer(10001);
+
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
         server.addController("/api/deleteQuestion", new DeleteQuestionController(questionDao));
         server.addController("/api/editQuestion", new EditQuestionController(questionDao));
@@ -120,6 +118,7 @@ public class HttpServer {
         server.addController("/api/savePerson", new SavePersonController(personDao));
         server.addController("/api/userInput", new UserInputController(personDao));
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
+        //server.addController("/favicon.ico", new FaviconController());
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 
     }

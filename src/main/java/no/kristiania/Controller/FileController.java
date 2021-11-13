@@ -5,7 +5,6 @@ import no.kristiania.Http.HttpReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 
 public class FileController implements HttpController{
     @Override
@@ -23,7 +22,12 @@ public class FileController implements HttpController{
         if (fileResource != null) {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             fileResource.transferTo(buffer);
-             responseText = buffer.toString();
+            if (fileTarget.equals("/favicon.ico")){
+                contentType = "image/ico";
+                byte[] icon = buffer.toByteArray();
+                return new HttpReader("HTTP/1.1 200 OK", icon, "Content-Type: "+contentType);
+            }
+            responseText = buffer.toString();
 
             if (fileTarget.endsWith(".html")) {
                 contentType = "text/html";

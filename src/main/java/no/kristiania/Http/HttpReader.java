@@ -1,17 +1,18 @@
 package no.kristiania.Http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HttpReader {
     public String startLine;
     public final Map<String, String> headerFields = new HashMap<>();
     public String messageBody;
+    public byte[] messageBodyInBytes;
 
 
     public HttpReader(Socket socket) throws IOException {
@@ -26,6 +27,16 @@ public class HttpReader {
    public HttpReader(String startLine, String messageBody) {
         this.startLine = startLine;
         this.messageBody = messageBody;
+    }
+    public HttpReader(String startLine, byte[] messageBody, String... headers) {
+        this.startLine = startLine;
+        this.messageBodyInBytes = messageBody;
+        for (String headerfield : headers) {
+            int colonPos = headerfield.indexOf(':');
+            String headerKey = headerfield.substring(0, colonPos);
+            String headerValue = headerfield.substring(colonPos+1).trim();
+            headerFields.put(headerKey, headerValue);
+        }
     }
 
     public HttpReader(String startLine, String messageBody, String... headers) {
@@ -58,6 +69,7 @@ public class HttpReader {
         return line.toString();
     }
 
+
     private void readHeader(Socket socket) throws IOException {
         String headerLine;
         while (!(headerLine = HttpReader.readLine(socket)).isBlank()) {
@@ -88,21 +100,27 @@ public class HttpReader {
     }
 
     public void write(Socket socket) throws IOException {
-        String response = startLine + "\r\n" +
-                "Content-Length: " + messageBody.length() + "\r\n";
-                if (headerFields.containsKey("Content-Type")) {
-                    response += "Content-Type: " + headerFields.get("Content-Type") + "\r\n";
-                }
-                if (headerFields.containsKey("Set-Cookie")) {
-                 response += "Set-Cookie: " + headerFields.get("Set-Cookie") + "\r\n";
-                }
-                if (headerFields.containsKey("Location")){
-                    response += "Location: " + headerFields.get("Location") + "\r\n";
-                }
-                response +=
-                "Connection: close\r\n" +
-                "\r\n" +
-                messageBody;
-        socket.getOutputStream().write(response.getBytes());
+        String response = startLine + "\r\n";
+            if (messageBody == null) {
+                response += "Content-Length: " + messageBodyInBytes.length + "\r\n";
+            } else {
+                response += "Content-Length: " + messageBody.length() + "\r\n";
+            }
+
+            for (Map.Entry <String,String> header : headerFields.entrySet()) {
+                response += header.getKey() + ":" + header.getValue() + "\r\n";
+            }
+
+            response += "Connection: close\r\n\r\n";
+            if(messageBody == null) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                outputStream.write(response.getBytes());
+                outputStream.write(messageBodyInBytes);
+                socket.getOutputStream().write(outputStream.toByteArray());
+            } else {
+                response += messageBody;
+                socket.getOutputStream().write(response.getBytes());
+            }
+
     }
 }
