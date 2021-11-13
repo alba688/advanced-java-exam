@@ -40,13 +40,10 @@ public class HttpServer {
         } catch (IOException e) {
             System.out.println("No Connection for socket");
             e.printStackTrace();
-        } catch (SQLException sqlException) {
-            System.out.println("No SQL connection");
-            sqlException.printStackTrace();
         }
     }
 
-    private void handleClient() throws IOException, SQLException {
+    private void handleClient() throws IOException {
         Socket clientSocket = serverSocket.accept();
 
         HttpReader httpReader = new HttpReader(clientSocket);
@@ -70,11 +67,19 @@ public class HttpServer {
         }
 
         if (controllers.containsKey(fileTarget)) {
-            HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
-            readerResponse.write(clientSocket);
+            try {
+             HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
+             readerResponse.write(clientSocket);
+            } catch (SQLException sql) {
+                String responseTxt = "Internal Server Error";
+                String response = "HTTP/1.1 500 Internal Server Error\r\n" +
+                        "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
+                        "Connection: close\r\n\r\n"
+                        + responseTxt;
+                clientSocket.getOutputStream().write(response.getBytes());
+            }
             return;
         }
-
 
         if (fileTarget.equals("/hello")) {
             String yourName = "world";
@@ -83,7 +88,6 @@ public class HttpServer {
                 Map<String, String> queryMap = HttpReader.parseRequestParameters(query);
                 yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
             }
-
             String responseText = "Hello " +yourName;
             write200OKResponse(responseText, "text/plain", clientSocket);
 
