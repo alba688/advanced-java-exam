@@ -31,6 +31,6 @@ public class EditQuestionController implements HttpController {
         // sends updated question to edit method to deploy sql statement
         questionDao.edit(question);
 
-        return new HttpReader("HTTP/1.1 200 OK", "Edit complete.");
+        return new HttpReader("HTTP/1.1 303 See Other", "Edit complete.", "Location: /editQuestion.html");
     }
 }

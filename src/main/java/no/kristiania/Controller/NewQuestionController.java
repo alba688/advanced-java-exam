@@ -30,6 +30,6 @@ public class NewQuestionController implements HttpController {
 
         questionDao.save(question);
 
-        return new HttpReader("HTTP/1.1 301 Person saved", "Question added", "Location: /index.html");
+        return new HttpReader("HTTP/1.1 303 See other", "Question added", "Location: /addQuestion.html");
     }
 }
