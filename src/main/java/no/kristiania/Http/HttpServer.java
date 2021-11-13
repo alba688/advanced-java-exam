@@ -51,12 +51,7 @@ public class HttpServer {
              readerResponse.write(clientSocket);
             } catch (SQLException sql) {
                 logger.warn("SQL is missing or invalid");
-                String responseTxt = "Internal Server Error";
-                String response = "HTTP/1.1 500 Internal Server Error\r\n" +
-                        "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
-                        "Connection: close\r\n\r\n"
-                        + responseTxt;
-                clientSocket.getOutputStream().write(response.getBytes());
+                write500Code(clientSocket);
             }
         } else {
             try {
@@ -64,15 +59,18 @@ public class HttpServer {
                 readerResponse.write(clientSocket);
             } catch (IOException ioe) {
                 logger.warn("Error reading file from server");
-                String responseTxt = "Internal Server Error";
-                String response = "HTTP/1.1 500 Internal Server Error\r\n" +
-                        "Content-Length: " + responseTxt.getBytes().length + "\r\n" +
-                        "Connection: close\r\n\r\n"
-                        + responseTxt;
-                clientSocket.getOutputStream().write(response.getBytes());
+                write500Code(clientSocket);
             }
         }
         return;
+    }
+
+    private void write500Code(Socket clientSocket) throws IOException {
+        String response = "HTTP/1.1 500 Internal Server Error\r\n" +
+                "Content-Length: 20\r\n" +
+                "Connection: close\r\n\r\n"
+                + "Internal Server Error";
+        clientSocket.getOutputStream().write(response.getBytes());
     }
 
     public int getPort() {
@@ -104,7 +102,6 @@ public class HttpServer {
         AnswerDao answerDao = new AnswerDao(dataSource);
         PersonDao personDao = new PersonDao(dataSource);
         HttpServer server = new HttpServer(10001);
-
         server.addController("/api/answerQuestionnaire", new AnswerQuestionnaireController(questionnaireDao, answerDao));
         server.addController("/api/deleteQuestion", new DeleteQuestionController(questionDao));
         server.addController("/api/editQuestion", new EditQuestionController(questionDao));
@@ -118,7 +115,6 @@ public class HttpServer {
         server.addController("/api/savePerson", new SavePersonController(personDao));
         server.addController("/api/userInput", new UserInputController(personDao));
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
-        //server.addController("/favicon.ico", new FaviconController());
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
 
     }

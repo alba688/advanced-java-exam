@@ -36,7 +36,6 @@ public abstract class AbstractDao<T> {
                 }
             }
         }
-
     }
 
     protected List<T> listAll(String sql) throws SQLException {
@@ -47,7 +46,6 @@ public abstract class AbstractDao<T> {
                     while(rs.next()) {
                         result.add(mapFromResultSet(rs));
                     };
-
                     return result;
                 }
             }
@@ -63,7 +61,6 @@ public abstract class AbstractDao<T> {
                     while(rs.next()) {
                         result.add(mapFromResultSet(rs));
                     };
-
                     return result;
                 }
             }
@@ -78,7 +75,6 @@ public abstract class AbstractDao<T> {
                 statement.setString(3, editedQuestion.getHighLabel());
                 statement.setInt(4, editedQuestion.getNumberOfValues());
                 statement.setInt(5, editedQuestion.getQuestionId());
-
                 statement.executeUpdate();
             }
         }
@@ -88,7 +84,6 @@ public abstract class AbstractDao<T> {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, id);
-
                 statement.executeUpdate();
             }
         }
