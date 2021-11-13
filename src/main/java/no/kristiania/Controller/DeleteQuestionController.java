@@ -21,6 +21,6 @@ public class DeleteQuestionController implements HttpController {
 
         questionDao.delete(question.getQuestionId());
 
-        return new HttpReader("HTTP/1.1 200 OK", "Question deleted");
+        return new HttpReader("HTTP/1.1 303 See other", "Question deleted", "Location: ../deleteQuestion.html");
     }
 }

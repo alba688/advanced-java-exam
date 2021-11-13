@@ -56,6 +56,7 @@ public class QuestionDao extends AbstractDao<Question> {
     }
 
     public void delete(int questionId) throws SQLException {
+        super.delete("delete from answer where question_id = ?", questionId);
         super.delete("delete from question where question_id = ?", questionId);
     }
 
