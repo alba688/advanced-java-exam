@@ -9,9 +9,9 @@ import java.util.Map;
 
 
 public class SavePersonController implements HttpController{
-        private final PersonDao personDao;
+    private final PersonDao personDao;
 
-        public SavePersonController(PersonDao personDao) {
+    public SavePersonController(PersonDao personDao) {
             this.personDao = personDao;
         }
 

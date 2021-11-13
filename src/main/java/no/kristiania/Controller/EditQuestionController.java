@@ -18,17 +18,14 @@ public class EditQuestionController implements HttpController {
     public HttpReader handle(HttpReader request) throws SQLException {
         Map<String, String> queryMap = HttpReader.parseRequestParameters(request.messageBody);
 
-        // retrieves the questionId to be edited
         Question question = questionDao.retrieve(Integer.parseInt(queryMap.get("questions")));
 
-        // updates data using setters
         question.setQuestionTitle(queryMap.get("title"));
         question.setLowLabel(queryMap.get("low_label"));
         question.setHighLabel(queryMap.get("high_label"));
         int numberOfValues = Integer.parseInt(queryMap.get("values"));
         question.setNumberOfValues(numberOfValues);
 
-        // sends updated question to edit method to deploy sql statement
         questionDao.edit(question);
 
         return new HttpReader("HTTP/1.1 303 See Other", "Edit complete.", "Location: /editQuestion.html");

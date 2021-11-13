@@ -116,7 +116,6 @@ public class HttpServer {
         server.addController("/api/userInput", new UserInputController(personDao));
         server.addController("/api/showAnswers", new ShowAnswersController(questionnaireDao, categoryDao, questionDao, answerDao));
         logger.info("Starting http://localhost:{}/index.html", server.getPort());
-
     }
 
 

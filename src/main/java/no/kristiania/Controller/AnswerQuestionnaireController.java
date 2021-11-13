@@ -37,7 +37,6 @@ public class AnswerQuestionnaireController implements HttpController {
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
-
                 answerDao.save(answer);
             }
         }

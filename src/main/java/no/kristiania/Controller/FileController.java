@@ -35,7 +35,7 @@ public class FileController implements HttpController{
                 contentType = "text/css";
             }
 
-    } else {
+        } else {
            responseText = "File not found: " + fileTarget;
 
             return new HttpReader("HTTP/1.1 404 File not found", responseText);

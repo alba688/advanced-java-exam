@@ -20,13 +20,12 @@ public class UserInputController implements HttpController{
         String responseTxt = "";
         String cookie = request.getResponseHeader("Cookie");
         try {
-                int personID = Integer.parseInt(request.parseRequestParameters(cookie).get("user"));
-                for (Person person : personDao.listAll()) {
-
-                    if (person.getPersonId() == personID) {
-                        responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
-                    }
+            int personID = Integer.parseInt(request.parseRequestParameters(cookie).get("user"));
+            for (Person person : personDao.listAll()) {
+                if (person.getPersonId() == personID) {
+                    responseTxt = "<h2>Velkommen igjen," + personDao.retrieve(personID).getFirstName() + "</h2>";
                 }
+            }
         } catch(NullPointerException | NumberFormatException np) {
             responseTxt += "<form method=\"POST\" action=\"/api/savePerson\">" +
                     " <label>First Name: <input type=\"text\" name=\"firstName\"/></label><br>\n" +
