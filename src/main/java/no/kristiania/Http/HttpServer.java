@@ -52,10 +52,6 @@ public class HttpServer {
         String[] requestLine = httpReader.startLine.split(" ");
         String requestTarget = requestLine[1];
 
-        if (requestTarget.equals("/")) {
-            requestTarget = "/index.html";
-        }
-
         int questionPos = requestTarget.indexOf('?');
         String fileTarget;
         String query = null;
@@ -81,44 +77,15 @@ public class HttpServer {
                 clientSocket.getOutputStream().write(response.getBytes());
             }
             return;
-        }
-
-        if (fileTarget.equals("/hello")) {
-            String yourName = "world";
-
-            if (query != null) {
-                Map<String, String> queryMap = HttpReader.parseRequestParameters(query);
-                yourName = queryMap.get("firstName") + " " + queryMap.get("lastName");
-            }
-            String responseText = "Hello " +yourName;
-            write200OKResponse(responseText, "text/plain", clientSocket);
-
-
         } else {
-            InputStream fileResource = getClass().getResourceAsStream(fileTarget);
-            if (fileResource != null) {
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                fileResource.transferTo(buffer);
-                String responseText = buffer.toString();
+            try {
+                addController((fileTarget), new FileController());
+                HttpReader readerResponse = controllers.get(fileTarget).handle(httpReader);
+                readerResponse.write(clientSocket);
+            } catch (Exception e) {
 
-                String contentType = "text/plain";
-                if (requestTarget.endsWith(".html")) {
-                    contentType = "text/html";
-                } else if (requestTarget.endsWith(".css")) {
-                    contentType = "text/css";
-                }
-                write200OKResponse(responseText, contentType, clientSocket);
-                return;
             }
-            String responseText = "File not found: " + requestTarget;
-
-            String response = "HTTP/1.1 404 File not found\r\n" +
-                    "Content-Length: " + responseText.getBytes().length + "\r\n" +
-                    "Content-Type: text/plain\r\n" +
-                    "Connection: close\r\n" +
-                    "\r\n" +
-                    responseText;
-            clientSocket.getOutputStream().write(response.getBytes());
+            return;
         }
     }
 

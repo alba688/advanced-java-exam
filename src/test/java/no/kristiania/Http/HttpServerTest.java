@@ -45,14 +45,14 @@ public class HttpServerTest {
 
     @Test
     void shouldReturn200Response() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/index.html");
         assertEquals(200, client.getStatusCode());
     }
 
     @Test
     void shouldReturnContentType() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
-        assertEquals("text/plain", client.getResponseHeader("Content-Type"));
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/index.html");
+        assertEquals("text/html", client.getResponseHeader("Content-Type"));
     }
 
     @Test
@@ -74,12 +74,6 @@ public class HttpServerTest {
         HttpClient client = new HttpClient("localhost", server.getPort(), "/file.html");
         assertEquals(fileContent, client.getMessageBody());
         assertEquals("text/html", client.getResponseHeader("Content-Type"));
-    }
-
-    @Test
-    void shouldEchoQueryParameters() throws IOException {
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello?firstName=Test&lastName=Tester");
-        assertEquals("Hello Test Tester", client.getMessageBody());
     }
 
     @Test

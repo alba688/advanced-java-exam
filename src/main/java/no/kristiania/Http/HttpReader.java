@@ -90,6 +90,9 @@ public class HttpReader {
     public void write(Socket socket) throws IOException {
         String response = startLine + "\r\n" +
                 "Content-Length: " + messageBody.length() + "\r\n";
+                if (headerFields.containsKey("Content-Type")) {
+                    response += "Content-Type: " + headerFields.get("Content-Type") + "\r\n";
+                }
                 if (headerFields.containsKey("Set-Cookie")) {
                  response += "Set-Cookie: " + headerFields.get("Set-Cookie") + "\r\n";
                 }
