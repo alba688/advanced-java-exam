@@ -27,10 +27,5 @@ jobs:
     - name: Publish test report
       if: ${{ always() }}
       uses: scacap/action-surefire-report@v1
-    - name: Generate JaCoCo Badge
-      uses: cicirello/jacoco-badge-generator@v2
-      with:
-        generate-branches-badge: true
-        jacoco-csv-file: doc/jacoco.csv
-        badges-directory: doc
+
 
