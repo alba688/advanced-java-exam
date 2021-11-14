@@ -1,10 +1,9 @@
 [![Java CI with Maven](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml/badge.svg)](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml)
-![Coverage](doc/jacoco.svg)
 
 # Eksamen - PGR203 - Avansert Java
 ### README.md skal inneholde:
 
-* [ ] Korrekt link til Github Actions
+* [x] Korrekt link til Github Actions
 * [x] Beskrivelse av prosjektets funksjonalitet, hvordan vi har bygget det
 * [x] Beskrivelse av hvordan man kjører/skal teste programmet
 * [ ] Beskrivelse eventuell ekstra leveranse utover minimum
@@ -13,12 +12,19 @@
 * [ ] Dokumentasjon av design på løsningen
 * [ ] Beskrivelse av erfaringene med arbeidet og løsningen
 
-## Funksjonalitet:
+## Prosjektets funksjonalitet:
 
-Programmet lar brukeren opprette en eller flere brukerundersøkelse med spørsmål og kategorier. Hvert spørsmål har en tittel og kan besvares på en skala som brukeren har bestemt når spørsmålet ble lagret. Brukeren kan i tillegg legge inn informasjon om seg selv, og registere sitt svar på en brukersøkelse. En kan også liste ut en spørreundersøkelse og se hva gjennomsnittsvaret er. Brukeren kan også slette eller redigere spørsmål om han ønsker.
+### Webgrensesnittet
 
-På baksiden av programmet kjører en webserver som tar lister ut filer, håndterer HTTP forespørsler og som lagrer / og henter ut informasjon fra en database som vises til brukeren gjennom HTTP responser.
-Vi begynte å bygge gjennom å lage en enkel klient som sender HTTP forespørsler, derettter opprettet vi en server-klasse som tar imot forespørslene og sender svar tilbake. Her sikret vi grunnleggende funksjonalitet som som å dele opp en forespørsel, ta imot informasjon gjennom querier, lese og sende data osv. Dette ble gjort i en egen HttpReader klasse som håndterer trafikken mellom klient og server. 
+Programmet lar brukeren opprette én eller flere brukerundersøkelser med spørsmål og kategorier. Hvert spørsmål har en tittel og kan besvares på en forhåndsbestemt skala. Brukeren kan også slette eller redigere spørsmål om han ønsker. 
+En person kan også legge inn informasjon om seg selv, og registere sitt svar på en brukersøkelse. En kan også liste ut en spørreundersøkelse, og se hva gjennomsnittsvaret er.
+
+### Serveren
+På baksiden av programmet kjører en webserver som kan liste ut filer, håndtere HTTP forespørsler og lagre / hente ut informasjon fra en database. Denne informasjonen sender serveren tilbake til brukeren. Serveren gir også 
+
+
+### Framgangmetoden
+Vi begynte å bygge prosjektet gjennom å lage en enkel klient som sender HTTP forespørsler, derettter opprettet vi en server-klasse som tar imot forespørslene og sender svar tilbake. Her sikret vi grunnleggende funksjonalitet som som å dele opp en forespørsel, ta imot informasjon gjennom querier, opprette og endre objekter. Dette ble gjort i en egen HttpReader klasse som håndterer trafikken mellom klient og server.
 
 Det neste steget var å bygge et eller flere Data Access Objects som kunne håndtere operasjoner mot database: Lagre, slette, endre og liste ut informasjon. Til slutt bygde vi programmet med forskjellige Controllere som kontroller hva som skal skje på serveren når han mottar en forespørsel. 
 

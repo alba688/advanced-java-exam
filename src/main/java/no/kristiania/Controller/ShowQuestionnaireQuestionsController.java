@@ -50,7 +50,7 @@ public class ShowQuestionnaireQuestionsController implements HttpController {
                         "<label>" + question.getLowLabel() + "</label>";
 
 
-                for (int i = 1; i < question.getNumberOfValues(); i++) {
+                for (int i = 1; i <= question.getNumberOfValues(); i++) {
                     responseTxt += "<input value=\"" + question.getQuestionId() + "v" + i +"\"" + "type=\"radio\" name=\"question"+j+"\"></input>";
                 }
                 j++;
@@ -66,8 +66,7 @@ public class ShowQuestionnaireQuestionsController implements HttpController {
             responseTxt+= "<p>You need to log in to answer questionnaire</p>";
         }
 
-        responseTxt += "</form>" +
-                "</body></html>";
+        responseTxt += "</form></body></html>";
 
 
         return new HttpReader("HTTP/1.1 200 OK", responseTxt);
