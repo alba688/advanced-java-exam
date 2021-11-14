@@ -2,7 +2,7 @@
 
 # Eksamen - PGR203 - Avansert Java
 
-[GitHub Classroom:](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen.git)
+[GitHub Classroom](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen.git)
 
 ## Prosjektets funksjonalitet:
 
