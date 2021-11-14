@@ -1,31 +1,51 @@
 [![Java CI with Maven](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml/badge.svg)](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/actions/workflows/maven.yml)
 
-
+# Eksamen - PGR203 - Avansert Java
 ### README.md skal inneholde:
 
 * [ ] Korrekt link til Github Actions
-* [ ] Beskrivelse av prosjektets funksjonalitet, hvordan vi har bygget det
-* [ ] Beskrivelse av hvordan man kjører/skal teste programmet
+* [x] Beskrivelse av prosjektets funksjonalitet, hvordan vi har bygget det
+* [x] Beskrivelse av hvordan man kjører/skal teste programmet
 * [ ] Beskrivelse eventuell ekstra leveranse utover minimum
 * [ ] Et diagram som viser datamodellen
 * [ ] Hvordan man bygger, konfigurerer og kjører løsningen
 * [ ] Dokumentasjon av design på løsningen
 * [ ] Beskrivelse av erfaringene med arbeidet og løsningen
 
-### FUNKSJONALITET:
+## Funksjonalitet:
 
-Programmet vårt gir brukeren mye funksjonalitet og kontroll over å lage et spørreskjema. Brukeren kan godt komme i gang med a lagre et spørreskjema med titel og tekst beskrivelse. Da kan de bestemme hvor mange kategorier spørreskjema skal ha og kan tilknytte flere spørsmål under hvert kategori. Ved å opprette et spørsmål har brukeren flere muligheter med tank på hvordan den skal besvares. Bruker setter in spørsmål og bestemmer seg en skala med. For eksempel man kan ha en enkelt besvarelse av «Ja» eller «Nei» med skala på 2 eller en større skala med merkelapper «Veldig Enig» eller «Helt Uenig» og en skala på 10. Under hele prosessen har brukeren også mulighet til å redigere eller slette et spørsmål.
+Programmet lar brukeren opprette en eller flere brukerundersøkelse med spørsmål og kategorier. Hvert spørsmål har en tittel og kan besvares på en skala som brukeren har bestemt når spørsmålet ble lagret. Brukeren kan i tillegg legge inn informasjon om seg selv, og registere sitt svar på en brukersøkelse. En kan også liste ut en spørreundersøkelse og se hva gjennomsnittsvaret er. Brukeren kan også slette eller redigere spørsmål om han ønsker.
 
-### KJØR PROGRAMMET
-Når et spørreskjema er bygget og lagret med alle kategoriene og spørsmålene brukeren ønsker, kan den vises og fylles ut på Show Questionnaire siden. Her kan man registrere seg og fylle ut en eller flere spørreskjemaer. Når den er fullført registreres besvarelser i databasen sammen med en ID som er unik til brukeren. Hvis man velger å fylle ut flere spørreskjemaer skal browseren huske hvem man er. Deretter kan brukeren se Show Answers siden for å se gjennomsnitt av besvarelse for hvert spørsmål.
+På baksiden av programmet kjører en webserver som tar lister ut filer, håndterer HTTP forespørsler og som lagrer / og henter ut informasjon fra en database som vises til brukeren gjennom HTTP responser.
+Vi begynte å bygge gjennom å lage en enkel klient som sender HTTP forespørsler, derettter opprettet vi en server-klasse som tar imot forespørslene og sender svar tilbake. Her sikret vi grunnleggende funksjonalitet som som å dele opp en forespørsel, ta imot informasjon gjennom querier, lese og sende data osv. Dette ble gjort i en egen HttpReader klasse som håndterer trafikken mellom klient og server. 
 
-### ERFARINGEN VÅR
+Det neste steget var å bygge et eller flere Data Access Objects som kunne håndtere operasjoner mot database: Lagre, slette, endre og liste ut informasjon. Til slutt bygde vi programmet med forskjellige Controllere som kontroller hva som skal skje på serveren når han mottar en forespørsel. 
+
+
+## Hvordan kjøre programmet
+
+Programmet trenger to filer for å kunne kjøre. En .jar fil som er selve programmet, og en properties fil som inneholder informasjon rundt din postgres-database.
+Properties filen må hate pgr203.propertiest og inneholde følgende: 
+```
+dataSource.url= ...
+dataSource.user= ...
+dataSource.password= ...
+```
+Denne filen legges i samme mappe som .jar filen og må være tilstede når man kjører programmet. 
+Programmet er bygget i en .jar fil som kan kjøres med åpne terminal og skrive kommandoen:
+```java -jar pgr203-exam-ssovesen-1.0-SNAPSHOT.jar```
+
+Nå skal programmet kjøre og du kan gå i browser'en og skrive inn ```http://localhost/10001``` og da skal du kunne begynne å bruke programmet. 
+
+Møter du på problemer for å legge inn bruker, kan det være lurt å tømme browseren for cookies.
+
+## ERFARINGEN VÅR
 Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi har havnet. Siden vi har jobbet sammen på tidligere arbeidskrav har vi skapt veldig god teamarbeid, tillit, og kommunikasjon som har vært svært viktig under eksamen. Vi begynte å jobbe før github-repoet ble publisert ved å lese nøye gjennom oppgaveteksten og diskutere hvordan programmet skulle fungere. Vi også begynte å tegne UML-diagram over hvordan databasen skulle se ut. Da hadde vi et god utgangspunkt for å begynne å kode. Vi par-programmert med TDD for å opprette nesten hele prosjektet. Når vi hadde den grunnleggende funksjonalitet, begynte vi å dele arbeid i vår egne prosjekter, som å lage ny funksjonalitet eller refactoring av koden.
 
 ### DIAGRAM AV PROGRAMMET
-![UML diagram of data](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/blob/working-database/doc/UML.png)
+![UML diagram of data](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/doc/UML.png)
 
-![PUML diagram of program](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/blob/working-database/doc/PUML.png)
+![PUML diagram of program](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/doc/PUML.png)
 
 
 ### EXTRAOPPGAVER VI HAR KLART
@@ -51,7 +71,7 @@ Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi
 ### GJENSTÅENDE EXTRAOPPGAVER
 
 * [-] Å opprette og liste spørsmål hadde vært logisk og REST-fult å gjøre med GET /api/questions og POST /api/questions. Klarer dere å endre måten dere håndterer controllers på slik at en GET og en POST request kan ha samme request target?
-* [ ] JDBC koden fra forelesningen har en feil ved retrieve dersom id ikke finnes. Kan dere rette denne?
+* [x] JDBC koden fra forelesningen har en feil ved retrieve dersom id ikke finnes. Kan dere rette denne?
 * [-] Implementasjon av Chunked Transfer Encoding
-* [ ] Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
+* [-] Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
 
