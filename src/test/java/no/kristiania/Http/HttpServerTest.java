@@ -247,7 +247,7 @@ public class HttpServerTest {
                 "    <title>Show Questionnaire | Kristiania Questionnaire</title>\n" +
                 "    <link rel=\"stylesheet\" href=\"../style.css\">\n" +
                 "</head>\n" +
-                "<body><h1>title</h1><p>text</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><div class=\"category\"><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><label>High</label><br></div><p>You need to log in to answer questionnaire</p></form></body></html>", postClient.getMessageBody());
+                "<body><h1>title</h1><p>text</p><form method=\"POST\" action=\"/api/answerQuestionnaire\"><div class=\"category\"><h2>Chosen questionnaire</h2><p>null</p><p>Question Title</p><label>Low</label><input value=\"1v1\"type=\"radio\" name=\"question0\"></input><input value=\"1v2\"type=\"radio\" name=\"question0\"></input><input value=\"1v3\"type=\"radio\" name=\"question0\"></input><input value=\"1v4\"type=\"radio\" name=\"question0\"></input><input value=\"1v5\"type=\"radio\" name=\"question0\"></input><label>High</label><br></div><p>You need to log in to answer questionnaire</p></form></body></html>", postClient.getMessageBody());
 
     }
 
