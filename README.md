@@ -42,8 +42,12 @@ Møter du på problemer for å legge inn bruker, kan det være lurt å tømme br
 ## ERFARINGEN VÅR
 Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi har havnet. Siden vi har jobbet sammen på tidligere arbeidskrav har vi skapt veldig god teamarbeid, tillit, og kommunikasjon som har vært svært viktig under eksamen. Vi begynte å jobbe før github-repoet ble publisert ved å lese nøye gjennom oppgaveteksten og diskutere hvordan programmet skulle fungere. Vi også begynte å tegne UML-diagram over hvordan databasen skulle se ut. Da hadde vi et god utgangspunkt for å begynne å kode. Vi par-programmert med TDD for å opprette nesten hele prosjektet. Når vi hadde den grunnleggende funksjonalitet, begynte vi å dele arbeid i vår egne prosjekter, som å lage ny funksjonalitet eller refactoring av koden.
 
-### DIAGRAM AV PROGRAMMET
+## Diagram av programmet
+UML diagram over databsen og hvordan vi har strukturert informasjonen. 
+
 ![UML diagram of data](/doc/UML.png)
+
+Dette er et diagram som viser hvordan programmet vårt fungerer.
 
 ![PUML diagram of program](/doc/PUML.png)
 
@@ -75,3 +79,6 @@ Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi
 * [-] Implementasjon av Chunked Transfer Encoding
 * [-] Vi har en coverage-badge som viser hvor mye coverage testene har når de kjører
 
+
+- UML diagrammet er ikke 100%
+- Vi må skrive inn hva vi ikke føler er 100%
