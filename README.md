@@ -25,6 +25,8 @@ Det neste steget var å bygge et eller flere Data Access Objects som kunne hånd
 
 ## Hvordan kjøre programmet
 
+For å bygge programmet må man enten kjøre koden `mvn package` i Maven CLI i terminal, hvis man har den eller laste inn koden i et IDE som støtter maven, og pakke det ut derfra. 
+
 Programmet trenger to filer for å kunne kjøre. En .jar fil som er selve programmet, og en properties fil som inneholder informasjon rundt din postgres-database.
 Properties filen må hete pgr203.properties og inneholde følgende verdier: 
 ```
@@ -47,11 +49,13 @@ Når programmet kjører kan du bruke webgrensesnittet ved å åpne browseren og 
 ## Diagram av programmet
 UML diagram over databasen og hvordan vi har strukturert informasjonen.
 
-![UML diagram of data](/doc/UML.png)
+![UML diagram of data](doc/UML.png)
 
 Dette er et diagram som viser hvordan programmet vårt fungerer i en enkel HTTP forespørsel.
 
-![PUML diagram of program](/doc/PUML.png)
+![PUML diagram of program](doc/PUML.png)
+
+![Diagram of architecture](doc/Program%20architecture.png)
 
 # Erfaringen vår
 Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi har havnet til slutt. Siden vi har jobbet sammen på tidligere arbeidskrav har vi godt samarbeid, god tillit til hverandre, og dette har bidratt til god kommunikasjon under eksamen. Vi mener at dette har vært viktige faktorer for hva vi har oppnådd.  
