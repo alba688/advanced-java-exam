@@ -51,7 +51,7 @@ public class AnswerDao extends AbstractDao<Answer>{
     }
     
     public int getAverage(int id) throws SQLException {
-        logger.info("Retrieved avarage from answer "+ id);
+        logger.info("Retrieved average from answer "+ id);
         return super.getAverage("select AVG(answer_value) from answer where question_id = (?)", id);
 
     }
