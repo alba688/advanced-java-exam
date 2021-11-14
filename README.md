@@ -43,9 +43,9 @@ Møter du på problemer for å legge inn bruker, kan det være lurt å tømme br
 Vi har jobbet veldig hardt med dette prosjektet og er veldig stolte over hvor vi har havnet. Siden vi har jobbet sammen på tidligere arbeidskrav har vi skapt veldig god teamarbeid, tillit, og kommunikasjon som har vært svært viktig under eksamen. Vi begynte å jobbe før github-repoet ble publisert ved å lese nøye gjennom oppgaveteksten og diskutere hvordan programmet skulle fungere. Vi også begynte å tegne UML-diagram over hvordan databasen skulle se ut. Da hadde vi et god utgangspunkt for å begynne å kode. Vi par-programmert med TDD for å opprette nesten hele prosjektet. Når vi hadde den grunnleggende funksjonalitet, begynte vi å dele arbeid i vår egne prosjekter, som å lage ny funksjonalitet eller refactoring av koden.
 
 ### DIAGRAM AV PROGRAMMET
-![UML diagram of data](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/doc/UML.png)
+![UML diagram of data](/doc/UML.png)
 
-![PUML diagram of program](https://github.com/kristiania-pgr203-2021/pgr203-exam-ssovesen/doc/PUML.png)
+![PUML diagram of program](/doc/PUML.png)
 
 
 ### EXTRAOPPGAVER VI HAR KLART
